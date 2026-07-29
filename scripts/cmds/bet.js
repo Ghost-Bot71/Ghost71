@@ -5,7 +5,7 @@ module.exports = {
     author: "xalman", // cmd main author tanil full system modified by xalman 
     shortDescription: { en: "Random multiplier bet game with hourly limit" },
     longDescription: { en: "Place a bet and win. 50% win rate and 50 plays per hour limit." },
-    category: "Game",
+    category: "GAMES",
   },
 
   langs: {

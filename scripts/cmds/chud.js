@@ -18,7 +18,7 @@ module.exports = {
     role: 0,
     countDown: 10,
     shortDescription: "poke image",
-    category: "fun"
+    category: "FUN & SOCIAL"
   },
 
   onStart: async function ({ api, event, message, usersData }) {

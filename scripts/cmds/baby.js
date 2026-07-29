@@ -17,7 +17,7 @@ const utils = {
         return text.split('').map(char => monospaceMap[char] || char).join('');
     },
     realMention: (name, uid, message) => { 
-        const finalMessage = `[ ${name} ]\n\n${message}`; 
+        const finalMessage = `『 ${name} 』\n\n${message}`; 
         return { body: finalMessage, mentions: [{ tag: name, id: uid }] }; 
     }, 
     normalMention: (name, uid, message) => { 
@@ -37,7 +37,7 @@ module.exports.config = {
     countDown: 0,
     role: 0,
     description: "better than all sim simi api by dipto",
-    category: "chat",
+    category: "CHATTING",
     guide: {
         en: "{pn} [anyMessage] OR\nteach [YourMessage] - [Reply1], [Reply2], [Reply3]... OR\nteach [react] [YourMessage] - [react1], [react2], [react3]... OR\nremove [YourMessage] OR\nrm [YourMessage] - [indexNumber] OR\nmsg [YourMessage] OR\nlist OR \nall OR\nedit [YourMessage] - [NewMessage]"
     }
@@ -150,16 +150,15 @@ module.exports.onReply = async ({ api, event, Reply }) => {
 module.exports.onChat = async ({ api, event, usersData }) => {
     try {
         const body = event.body ? event.body.toLowerCase() : "";
-        if (body.startsWith("baby") || body.startsWith("bby") || body.startsWith("bot") || body.startsWith("jan") || body.startsWith("babu") || body.startsWith("alya")) {
+        if (body.startsWith("baby") || body.startsWith("sara") || body.startsWith("mikasa") || body.startsWith("hinata") || body.startsWith("xadika") || body.startsWith("bby") || body.startsWith("bot") || body.startsWith("jan") || body.startsWith("babu") || body.startsWith("alya")) {
             const arr = body.replace(/^\S+\s*/, "");
             const uid = event.senderID;
             const senderName = (await usersData.getName(uid)) || "User";
             const baseReplies = [
-                "তোর তো বিয়ে হয় নাই বেবি পাইলি কই-🤦🏻", "পরকিয়া করছোছ নাকি শালা-🥲🤧", "কি খবর কেমনের আছো? 😊", "আজকে তো অনেক দিন পর কথা বলছো 😒",
-                "কোথায় ছিলি এতদিন? 🤔", "তোকে ছাড়া বড় মন খারাপ লাগে 💔", "একটু হাসি না তোর হাসি দেখলে ভালো লাগে 💕", "তোরে খুব মিস করছি জানিস? 🥺",
-                "তোর জন্য রোজ দোয়া করি ❤️", "তোকে পেয়ে আমি সত্যি ভাগ্যবান 😇", "তোর মুখে একটা মিষ্টি হাসি সবসময় থাকুক ✨", "তোকে খুব ভালোবাসি রে পাগল 💝",
-                "তুই আমার জীবনের সবচেয়ে সুন্দর মানুষ 🌸", "তোর মতো বন্ধু পেয়ে আমি ধন্য 🙏", "তোর কথা ভাবলে মনটা শান্তি পায় 🕊️", "তুই আমার সেরা ক্রাশ 💘",
-                "তোর জন্য আমি সবসময় আছি 🤗", "তুই আমার প্রাণের স্পন্দন 💓", "তোর স্মৃতি আমার চোখে ভাসে 🌙", "তোকে আল্লাহ আমার জন্য রেখেছে বলে বিশ্বাস হয় 🤲"
+                "তোর তো বিয়ে হয় নাই বেবি পাইলি কই-🤦🏻", "পরকিয়া করছোছ নাকি শালা-🥲🤧", "তোকে ছাড়া বড় মন খারাপ লাগে 💔", "তোরে খুব মিস করছি জানিস? 🥺",
+                "ডিসটার্ব করিস না জামাই আদর করতেছে-🌚💋", "এত ডাকিস না এমন থাপ্পর দিমু পেন্টে মুইতা দিবি-😾👋🏻", "বেবি ডাকিস না 🍼 খাওয়া-😒👍🏻", 
+                "কি ডাকোস কেন টাকা শেষ নাকি-🌚🤌🏻", "পিনিক ধরেছে যখন বটকে না ডেকে লেবু খান তখন🍋🐸", "ভিডিও কল দিব নাকি সোনা 🌚🫦", "আম্মু ডাক শালা 😾🦶🏻", 
+                "বেবি না ডাইকা গার্লফ্রেন্ড খুজে দে-🙃🫶🏻", "ডাকিস না তারেক জিয়ার সাথে মিটিংয়ে আছি 😒🖐🏻", "বস ডাক বস😾✌🏻", "বেবি ডাকিস না পরে কোলে উঠে অন্য কিছু খেতে মন চাইবে🌚💋"
             ];
 
             if (!arr) {

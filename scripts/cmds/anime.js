@@ -13,7 +13,7 @@ module.exports = {
     role: 0,
     shortDescription: "Guess the anime character",
     longDescription: "Guess the name of the anime character based on traits and tags with random images.",
-    category: "game",
+    category: "GAMES",
     guide: {
       en: "{p}guess"
     }

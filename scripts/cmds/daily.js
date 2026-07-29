@@ -14,7 +14,7 @@ module.exports = {
         description: {
             en: "Claim your daily reward with a premium card design"
         },
-        category: "game",
+        category: "ECONOMY",
         guide: { en: "{pn}" }
     },
 

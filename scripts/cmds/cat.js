@@ -9,7 +9,7 @@ module.exports = {
         countDown: 5,
         role: 0,
         shortDescription: "Get random cat images or check list count",
-        category: "media",
+        category: "ANIME & MEDIA",
         guide: "{pn} or {pn} list"
     },
 

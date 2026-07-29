@@ -11,7 +11,7 @@ module.exports = {
     longDescription: {
       en: "Add, remove, transfer or zero out balance of users"
     },
-    category: "economy",
+    category: "ECONOMY",
     guide: {
       en: "{pn} add/remove/out/transfer [amount] [uid or mention or reply]"
     }

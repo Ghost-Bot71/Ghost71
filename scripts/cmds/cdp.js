@@ -7,7 +7,7 @@ module.exports = {
     version: "3.7",
     author: "xalman",
     description: "Random Matching Couple DP",
-    category: "love",
+    category: "FUN & SOCIAL",
     cooldown: 5
   },
 

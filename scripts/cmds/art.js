@@ -13,7 +13,7 @@ module.exports = {
         role: 0,
         shortDescription: "Generate 4 AI images in one grid",
         longDescription: "Generate 4 images, combine them into a grid, and reply with 1-4 to get the full image.",
-        category: "AI-IMAGE",
+        category: "AI & IMAGE GENERATION",
         guide: "{pn} [your prompt]"
     },
 

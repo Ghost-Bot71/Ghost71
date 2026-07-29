@@ -9,7 +9,7 @@ module.exports = {
     role: 0,
     shortDescription: "Get random captions",
     longDescription: "Fetch captions from various categories",
-    category: "fun",
+    category: "FUN & SOCIAL",
     guide: "{pn} <category>"
   },
 

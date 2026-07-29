@@ -23,7 +23,7 @@ module.exports = {
     version: "10.1",
     author: "xalman",
     role: 0,
-    category: "media",
+    category: "ANIME & MEDIA",
     shortDescription: "get category based video from API",
     guide: "{p}album [page]"
   },

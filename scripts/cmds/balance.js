@@ -14,7 +14,7 @@ module.exports = {
         countDown: 2,
         role: 0,
         description: "View balance card, transfer money, and track 10-day history",
-        category: "economy",
+        category: "ECONOMY",
         guide: { en: "{pn} | {pn} transfer @tag [amount] | {pn} history" }
     },
 

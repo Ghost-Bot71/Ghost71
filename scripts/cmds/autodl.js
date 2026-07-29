@@ -9,7 +9,7 @@ module.exports = {
     role: 0,
     shortDescription: "Ultra Fast Multi-Source Downloader",
     longDescription: "Download videos using Xalman API with flexible data parsing.",
-    category: "media",
+    category: "ANIME & MEDIA",
     guide: "{pn} <link> or just send the link"
   },
 
