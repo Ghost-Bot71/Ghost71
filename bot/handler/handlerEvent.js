@@ -11,16 +11,24 @@ function getRole(threadData, senderID) {
     const config = global.GoatBot.config;
     
     // Get all role lists from config
-    const creator = config.adminBot || [];
-    const developer = config.adminBot || [];
+    const creator = config.creator || [];
+    const developer = config.developer || [];
     const adminBot = config.adminBot || [];
-    const premium = config.adminBot || [];
-    const vipuser = config.adminBot || [];
+    const premium = config.premium || [];
+    const vipuser = config.vipuser || [];
     
     if (!senderID) return 0;
     
     const adminBox = threadData ? threadData.adminIDs || [] : [];
     
+    // Role Hierarchy (Higher number = higher permission)
+    // 6 = Creator (Highest)
+    // 5 = Developer
+    // 4 = Admin Bot
+    // 3 = Premium User
+    // 2 = VIP User
+    // 1 = Group Admin
+    // 0 = Normal User (Lowest)
     
     if (creator.includes(senderID))
         return 6;
