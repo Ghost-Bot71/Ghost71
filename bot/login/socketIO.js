@@ -17,29 +17,28 @@ module.exports = async (server) => {
 		if (!verifyToken)
 			throw ('"verifyToken" is not defined in config');
 		io = new Server(server);
-		log.info("SOCKET IO", getText("socketIO", "connected"));
+		log.info("🔌 SOCKET IO", getText("socketIO", "connected"));
 	}
 	catch (err) {
-		return log.err("SOCKET IO", getText("socketIO", "error"), err);
+		return log.err("❌ SOCKET IO", getText("socketIO", "error"), err);
 	}
 
 	io.on("connection", (socket) => {
 		if (socket.handshake.query.verifyToken != verifyToken) {
 			io.to(socket.id).emit(channelName, {
 				status: "error",
-				message: "Token is invalid"
+				message: "❌ Token is invalid"
 			});
 			socket.disconnect();
 			return;
 		}
-		log.info("SOCKET IO", `New client connected to socket: ${socket.id}`);
+		log.info("🟢 SOCKET IO", `New client connected: ${socket.id} ✅`);
 		io.to(socket.id).emit(channelName, {
 			status: "success",
-			message: "Connected to server successfully"
+			message: "✅ Connected to server successfully"
 		});
 		socket.on("disconnect", () => {
-			log.info("SOCKET IO", `Client disconnected from socket: ${socket.id}`);
+			log.info("🔴 SOCKET IO", `Client disconnected: ${socket.id} ❌`);
 		});
 	});
 };
-
