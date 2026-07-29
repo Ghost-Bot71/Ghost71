@@ -2,7 +2,7 @@ const axios = require("axios");
 
 module.exports = {
   config: {
-    name: "nx210",
+    name: "god",
     aliases: ["210"],
     version: "1.0",
     author: "〲T A N J I L ツ",
@@ -13,7 +13,7 @@ module.exports = {
     longDescription: {
       en: "This command allows group admins to invite up to 250 friends from their friend list to the current group."
     },
-    category: "Group",
+    category: "box chat",
     guide: {
       en: "Use {p}god to invite up to 250 friends to this group (admin only)."
     }

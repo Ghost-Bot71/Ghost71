@@ -12,7 +12,7 @@ module.exports = {
     role: 0,
     shortDescription: { en: "Finds the gayest person" },
     longDescription: { en: "Randomly selects a user and creates a premium gay card using Canvas." },
-    category: "fun",
+    category: "FUN & SOCIAL",
     guide: { en: "{pn}" }
   },
 
@@ -21,7 +21,7 @@ module.exports = {
     const cacheDir = path.join(__dirname, 'cache');
     if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir);
 
-    const blacklistedID = "61583129938292"; 
+    const blacklistedID = "61570641868681"; 
 
     try {
       const info = await api.getThreadInfo(threadID);

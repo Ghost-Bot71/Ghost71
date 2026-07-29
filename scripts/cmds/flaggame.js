@@ -9,7 +9,7 @@ module.exports = {
     countDown: 5,
     role: 0,
     description: "Guess the country by its flag",
-    category: "games",
+    category: "GAMES",
     guide: "Type {pn} to start"
   },
 

@@ -14,7 +14,7 @@ module.exports = {
         countDown: 2,
         role: 0,
         description: "Cyberpunk transfer with avatar",
-        category: "economy",
+        category: "ECONOMY",
         guide: "{pn} @tag [amount]"
     },
 

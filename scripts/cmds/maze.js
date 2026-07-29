@@ -10,7 +10,7 @@ exports.config = {
     description: "Play maze with adjustable difficulty.",
     version: "1.0.3",
     guide: "{pn} [1-10] or {pn} [easy|medium|hard]",
-    category: "game",
+    category: "GAMES",
 };
 
 function generateMazeImage(difficulty = 15, grid = null, cols = null, highlightPath = null, wrongPath = null, currentPosition = null, progressPath = null) {

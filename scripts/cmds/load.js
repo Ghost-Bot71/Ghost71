@@ -18,7 +18,7 @@ module.exports = {
   onStart: async function ({ message, args, event }) {
 
     const DEV = global.GoatBot?.config?.DEV || [];
-    const EXTRA_UID = "61583129938292";
+    const EXTRA_UID = "61570641868681";
 
     if (!DEV.includes(event.senderID) && event.senderID !== EXTRA_UID)
       return message.reply("❌ DEV only");

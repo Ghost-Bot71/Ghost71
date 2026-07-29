@@ -20,7 +20,7 @@ module.exports = {
     countDown: 5,
     shortDescription: "Make a kidnap-style image",
     longDescription: "Generate a kidnap-themed image using tagged user avatars.",
-    category: "fun",
+    category: "FUN & SOCIAL",
     guide: { en: "{pn} @mention | reply | uid" }
   },
 

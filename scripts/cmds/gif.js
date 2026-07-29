@@ -9,7 +9,7 @@ module.exports = {
     countDown: 5,
     role: 0,
     shortDescription: "Anime GIF",
-    category: "fun",
+    category: "FUN & SOCIAL",
     guide: "{pn} [reaction]"
   },
 

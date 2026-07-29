@@ -14,7 +14,7 @@ module.exports = {
     version: "1.7",
     author: "MahMUD",
     role: 0,
-    category: "fun",
+    category: "FUN & SOCIAL",
     description: "Generate fake chat via reply, mention, or user uid",
     countDown: 5,
   },

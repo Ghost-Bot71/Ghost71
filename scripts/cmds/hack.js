@@ -12,7 +12,7 @@ module.exports = {
     shortDescription: {
       en: "Generates a 'hacking' image with the user's profile picture.",
     },
-    category: "Fun",
+    category: "FUN & SOCIAL",
   },
   wrapText: async (ctx, name, maxWidth) => {
     return new Promise((resolve) => {

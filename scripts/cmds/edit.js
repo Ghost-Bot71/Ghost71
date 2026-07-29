@@ -12,7 +12,7 @@ module.exports = {
     role: 0,
     shortDescription: "AI Image Editor",
     longDescription: "Edit any image using AI by replying to it with a specific prompt.",
-    category: "ai",
+    category: "AI & IMAGE GENERATION",
     guide: "{pn} [reply to image] [prompt]"
   },
 
@@ -49,7 +49,7 @@ module.exports = {
         method: 'GET',
         url: API_URL,
         responseType: 'arraybuffer',
-        timeout: 120000 
+        timeout: 240000 
       });
 
       const buffer = Buffer.from(response.data, "utf-8");

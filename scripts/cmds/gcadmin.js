@@ -10,7 +10,7 @@ module.exports = {
     longDescription: {
       en: "Only the owner, bot admin or group admin can make or remove someone as admin."
     },
-    category: "Group",
+    category: "box chat",
     guide: {
       en: "/admin add [mention/reply/uid] or /admin remove [mention/reply/uid]"
     }

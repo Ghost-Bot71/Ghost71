@@ -5,7 +5,7 @@ module.exports = {
     version: "6.0",
     author: "xalman",
     role: 0,
-    category: "game"
+    category: "GAMES"
   },
 
   onStart: async function ({ event, args, message, usersData }) {

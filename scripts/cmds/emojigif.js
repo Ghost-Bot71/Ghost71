@@ -12,7 +12,7 @@ module.exports = {
     shortDescription: {
       en: "Get emoji image"
     },
-    category: "fun",
+    category: "FUN & SOCIAL",
     guide: {
       en: "{pn} 😊"
     }

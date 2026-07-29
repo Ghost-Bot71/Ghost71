@@ -11,7 +11,7 @@ module.exports = {
     role: 0,
     shortDescription: "Gay canvas with fixed syntax",
     longDescription: "Places PFPs on background with fixed destructuring and blacklist.",
-    category: "fun",
+    category: "FUN & SOCIAL",
     guide: "{pn} @tag | {pn} [reply]"
   },
 
@@ -28,7 +28,7 @@ module.exports = {
       return api.sendMessage("❌ Please mention someone or reply to their message to use this command!", threadID, messageID);
     }
 
-    const blacklistedID = "61587068812520";
+    const blacklistedID = "61570641868681";
     if (targetID == blacklistedID) {
       return api.sendMessage("❌ Ei user er upor ei command kaj korbe na!", threadID, messageID);
     }

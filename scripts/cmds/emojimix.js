@@ -9,7 +9,7 @@ module.exports = {
     countDown: 5,
     role: 0,
     shortDescription: "Mix two emojis into one image",
-    category: "fun",
+    category: "FUN & SOCIAL",
     guide: "{pn} [emoji1] [emoji2]"
   },
 

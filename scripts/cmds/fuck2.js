@@ -19,7 +19,7 @@ module.exports = {
     countDown: 5,
     shortDescription: "get 2 profile picture and generate NSFW fuck image using canvas",
     longDescription: "Create image",
-    category: "fun",
+    category: "FUN & SOCIAL",
     guide: { en: "{pn} @mention | reply | uid" }
   },
 

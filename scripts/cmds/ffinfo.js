@@ -9,7 +9,7 @@ module.exports = {
     countDown: 5,
     role: 0,
     shortDescription: { en: "Detailed Free Fire player profile info" },
-    category: "game",
+    category: "GAMES",
     guide: { en: "{pn} <uid>" }
   },
 

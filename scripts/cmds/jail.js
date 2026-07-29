@@ -12,7 +12,7 @@ module.exports = {
     role: 0,
     shortDescription: "jail picture",
     longDescription: "Create a Jail image with user avatar behind bars",
-    category: "fun",
+    category: "FUN & SOCIAL",
     guide: {
       en: "{pn} [@mention / reply / UID]"
     }

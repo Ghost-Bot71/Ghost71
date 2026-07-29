@@ -7,13 +7,13 @@ module.exports = {
     config: {
         name: "dog",
         aliases: ["dogs", "kutta"],
-        version: "3.0.0",
+        version: "3.0",
         author: "xalman",
         countDown: 5,
         role: 0,
         shortDescription: { en: "Convert someone into a dog" },
         longDescription: { en: "Put user's profile picture on a dog image using canvas" },
-        category: "fun",
+        category: "FUN & SOCIAL",
         guide: { en: "{pn} @mention / reply / UID" }
     },
 

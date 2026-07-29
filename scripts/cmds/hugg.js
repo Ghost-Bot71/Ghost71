@@ -10,7 +10,7 @@ module.exports = {
     countDown: 5,
     role: 0,
     description: "🤗 Create a cute hug image between you and your tagged partner!",
-    category: "love",
+    category: "FUN & SOCIAL",
     guide: {
       en: "{pn} @tag or reply — Generate hug image 🤗"
     }

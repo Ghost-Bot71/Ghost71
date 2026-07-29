@@ -9,7 +9,7 @@ module.exports = {
     countDown: 5,
     role: 0,
     description: "Play Islamic quiz with rewards",
-    category: "games",
+    category: "GAMES",
     guide: "{pn} | {pn} list"
   },
 

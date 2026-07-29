@@ -9,7 +9,7 @@ module.exports = {
     countDown: 5,
     role: 0,
     shortDescription: "Get the meaning of an emoji",
-    category: "tools",
+    category: "FUN & SOCIAL",
     guide: "{pn} [emoji]"
   },
 

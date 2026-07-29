@@ -11,7 +11,7 @@ module.exports = {
         role: 0,
         shortDescription: "Generate High-Quality AI Images",
         longDescription: "Generate stunning images using Flux.1-schnell model.",
-        category: "AI-IMAGE",
+        category: "AI & IMAGE GENERATION",
         guide: "{pn} [your prompt]"
     },
 
