@@ -191,9 +191,49 @@ module.exports = async function (databaseType, threadModel, api, fakeGraphql) {
 						message: `The first argument (threadID) must be a number, not a ${typeof threadID}`
 					});
 				}
-				threadInfo = threadInfo || await api.getThreadInfo(threadID);
+				
+				// ============================================
+				// FIX: Better error handling for getThreadInfo
+				// ============================================
+				try {
+					threadInfo = threadInfo || await api.getThreadInfo(threadID);
+				} catch (apiErr) {
+					throw new CustomError({
+						name: "API_ERROR",
+						message: `Failed to get thread info for threadID: ${threadID}. Error: ${apiErr.message}`
+					});
+				}
+				
+				// FIX: Check if threadInfo is null/undefined
+				if (!threadInfo) {
+					throw new CustomError({
+						name: "THREAD_INFO_NULL",
+						message: `Cannot get thread info for threadID: ${threadID}. Session may have expired or thread doesn't exist.`
+					});
+				}
+				
+				// FIX: Validate threadInfo has required properties
+				if (typeof threadInfo !== 'object') {
+					throw new CustomError({
+						name: "THREAD_INFO_INVALID",
+						message: `Invalid threadInfo type for threadID: ${threadID}. Expected object, got: ${typeof threadInfo}`
+					});
+				}
+				
 				const { threadName, userInfo, adminIDs } = threadInfo;
-				const newAdminsIDs = adminIDs.reduce(function (_, b) {
+				
+				// FIX: Ensure userInfo is an array
+				if (!userInfo || !Array.isArray(userInfo)) {
+					throw new CustomError({
+						name: "USERINFO_INVALID",
+						message: `userInfo is missing or not an array for threadID: ${threadID}. Got: ${typeof userInfo}`
+					});
+				}
+				
+				// FIX: Ensure adminIDs is an array (optional, default empty)
+				const safeAdminIDs = Array.isArray(adminIDs) ? adminIDs : [];
+
+				const newAdminsIDs = safeAdminIDs.reduce(function (_, b) {
 					_.push(b.id);
 					return _;
 				}, []);
@@ -202,9 +242,9 @@ module.exports = async function (databaseType, threadModel, api, fakeGraphql) {
 					const userID = user.id;
 					arr.push({
 						userID,
-						name: user.name,
-						gender: user.gender,
-						nickname: threadInfo.nicknames[userID] || null,
+						name: user.name || "Unknown",
+						gender: user.gender || 0,
+						nickname: threadInfo.nicknames?.[userID] || null,
 						inGroup: true,
 						count: 0,
 						permissionConfigDashboard: false
@@ -214,12 +254,12 @@ module.exports = async function (databaseType, threadModel, api, fakeGraphql) {
 
 				let threadData = {
 					threadID,
-					threadName,
+					threadName: threadName || "Unknown",
 					threadThemeID: threadInfo.threadTheme?.id || null,
-					emoji: threadInfo.emoji,
+					emoji: threadInfo.emoji || null,
 					adminIDs: newAdminsIDs,
-					imageSrc: threadInfo.imageSrc,
-					approvalMode: threadInfo.approvalMode,
+					imageSrc: threadInfo.imageSrc || null,
+					approvalMode: threadInfo.approvalMode || false,
 					members: newMembers,
 					banned: {},
 					settings: {
@@ -237,7 +277,13 @@ module.exports = async function (databaseType, threadModel, api, fakeGraphql) {
 			catch (err) {
 				reject_(err);
 			}
-			creatingThreadData.splice(creatingThreadData.findIndex(t => t.threadID == threadID), 1);
+			finally {
+				// FIX: Move cleanup to finally block to ensure it always runs
+				const index = creatingThreadData.findIndex(t => t.threadID == threadID);
+				if (index !== -1) {
+					creatingThreadData.splice(index, 1);
+				}
+			}
 		});
 		creatingThreadData.push({
 			threadID,
@@ -265,12 +311,53 @@ module.exports = async function (databaseType, threadModel, api, fakeGraphql) {
 							name: "INVALID_THREAD_ID",
 							message: `The first argument (threadID) must be a number, not a ${typeof threadID}`
 						}));
+						return;
 					}
+					
 					const threadInfo = await get_(threadID);
-					newThreadInfo = newThreadInfo || await api.getThreadInfo(threadID);
+					
+					// FIX: Wrap api.getThreadInfo in try-catch
+					try {
+						newThreadInfo = newThreadInfo || await api.getThreadInfo(threadID);
+					} catch (apiErr) {
+						throw new CustomError({
+							name: "API_ERROR",
+							message: `Failed to refresh thread info for threadID: ${threadID}. Error: ${apiErr.message}`
+						});
+					}
+					
+					// FIX: Check if newThreadInfo is null/undefined
+					if (!newThreadInfo) {
+						throw new CustomError({
+							name: "THREAD_INFO_NULL",
+							message: `Cannot refresh thread info for threadID: ${threadID}. Session may have expired or thread doesn't exist.`
+						});
+					}
+					
+					// FIX: Validate newThreadInfo type
+					if (typeof newThreadInfo !== 'object') {
+						throw new CustomError({
+							name: "THREAD_INFO_INVALID",
+							message: `Invalid newThreadInfo type for threadID: ${threadID}. Expected object, got: ${typeof newThreadInfo}`
+						});
+					}
+					
 					const { userInfo, adminIDs, nicknames } = newThreadInfo;
-					let oldMembers = threadInfo.members;
+					
+					// FIX: Check if userInfo exists and is iterable
+					if (!userInfo || !Array.isArray(userInfo)) {
+						throw new CustomError({
+							name: "USERINFO_INVALID",
+							message: `userInfo is missing or not an array for threadID: ${threadID}. Got: ${typeof userInfo}`
+						});
+					}
+					
+					// FIX: Ensure adminIDs is array (default empty)
+					const safeAdminIDs = Array.isArray(adminIDs) ? adminIDs : [];
+					
+					let oldMembers = threadInfo.members || [];
 					const newMembers = [];
+					
 					for (const user of userInfo) {
 						const userID = user.id;
 						const indexUser = _.findIndex(oldMembers, { userID });
@@ -278,9 +365,9 @@ module.exports = async function (databaseType, threadModel, api, fakeGraphql) {
 						const data = {
 							userID,
 							...oldDataUser,
-							name: user.name,
-							gender: user.gender,
-							nickname: nicknames[userID] || null,
+							name: user.name || "Unknown",
+							gender: user.gender || 0,
+							nickname: nicknames?.[userID] || null,
 							inGroup: true,
 							count: oldDataUser.count || 0,
 							permissionConfigDashboard: oldDataUser.permissionConfigDashboard || false
@@ -288,21 +375,24 @@ module.exports = async function (databaseType, threadModel, api, fakeGraphql) {
 						indexUser != -1 ? oldMembers[indexUser] = data : oldMembers.push(data);
 						newMembers.push(oldMembers.splice(indexUser != -1 ? indexUser : oldMembers.length - 1, 1)[0]);
 					}
+					
 					oldMembers = oldMembers.map(user => {
 						user.inGroup = false;
 						return user;
 					});
-					const newAdminsIDs = adminIDs.reduce(function (acc, cur) {
+					
+					const newAdminsIDs = safeAdminIDs.reduce(function (acc, cur) {
 						acc.push(cur.id);
 						return acc;
 					}, []);
+					
 					let threadData = {
 						...threadInfo,
-						threadName: newThreadInfo.threadName,
+						threadName: newThreadInfo.threadName || threadInfo.threadName || "Unknown",
 						threadThemeID: newThreadInfo.threadTheme?.id || null,
-						emoji: newThreadInfo.emoji,
+						emoji: newThreadInfo.emoji || null,
 						adminIDs: newAdminsIDs,
-						imageSrc: newThreadInfo.imageSrc,
+						imageSrc: newThreadInfo.imageSrc || null,
 						members: [
 							...oldMembers,
 							...newMembers
