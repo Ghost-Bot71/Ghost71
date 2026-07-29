@@ -1,5 +1,4 @@
 module.exports = {
-	// You can customize the language here or directly in the command files
 	onlyadminbox: {
 		description: "turn on/off only admin box can use bot",
 		guide: "   {pn} [on | off]",
@@ -220,32 +219,9 @@ module.exports = {
 		description: "Design rank card by your own",
 		guide: {
 			body: "   {pn} [maincolor | subcolor | linecolor | progresscolor | alphasubcolor | textcolor | namecolor | expcolor | rankcolor | levelcolor | reset] <value>"
-				+ "\n   In which: "
-				+ "\n  + maincolor | background <value>: main background of rank card"
-				+ "\n  + subcolor <value>: sub background"
-				+ "\n  + linecolor <value>: color of line between main and sub background"
-				+ "\n  + expbarcolor <value>: color of exp bar"
-				+ "\n  + progresscolor <value>: color of current exp bar"
-				+ "\n  + alphasubcolor <value>: opacity of sub background (from 0 -> 1)"
-				+ "\n  + textcolor <value>: color of text (hex color or rgba)"
-				+ "\n  + namecolor <value>: color of name"
-				+ "\n  + expcolor <value>: color of exp"
-				+ "\n  + rankcolor <value>: color of rank"
-				+ "\n  + levelcolor <value>: color of level"
-				+ "\n    • <value> can be hex color, rgb, rgba, gradient (each color is separated by space) or image url"
-				+ "\n    • If you want to use gradient, please enter many colors separated by space"
-				+ "\n   {pn} reset: reset all to default"
-				+ "\n   Example:"
-				+ "\n    {pn} maincolor #fff000"
-				+ "\n    {pn} subcolor rgba(255,136,86,0.4)"
-				+ "\n    {pn} reset",
-			attachment: {
-				[`${process.cwd()}/scripts/cmds/assets/guide/customrankcard_1.jpg`]: "https://i.ibb.co/BZ2Qgs1/image.png",
-				[`${process.cwd()}/scripts/cmds/assets/guide/customrankcard_2.png`]: "https://i.ibb.co/wy1ZHHL/image.png"
-			}
 		},
 		text: {
-			invalidImage: "Invalid image url, please choose an url with image destination (jpg, jpeg, png, gif), you can upload image to https://imgbb.com/ and choose \"get direct link\" to get image url",
+			invalidImage: "Invalid image url, please choose an url with image destination (jpg, jpeg, png, gif)",
 			invalidAttachment: "Invalid attachment, please choose an image file",
 			invalidColor: "Invalid color code, please choose a hex color code (6 digits) or rgba color code",
 			notSupportImage: "Url image is not supported with option \"%1\"",
@@ -322,7 +298,7 @@ module.exports = {
 	},
 	grouptag: {
 		description: "Tag members by group",
-		guide: "   {pn} add <groupTagName> <@tags>: use to add new group tag or add members to group tag\n   Example:\n    {pn} TEAM1 @tag1 @tag2\n\n   {pn} del <groupTagName> <@tags>: use to remove members from group tag\n   Example:\n    {pn} del TEAM1 @tag1 @tag2\n\n   {pn} remove <groupTagName>: use to remove group tag\n   Example:\n    {pn} remove TEAM1\n\n   {pn} rename <groupTagName> | <newGroupTagName>: use to rename group tag\n\n   {pn} [list | all]: use to view list of group tag in your group chat\n\n   {pn} info <groupTagName>: use to view info of group tag",
+		guide: "   {pn} add <groupTagName> <@tags>: use to add new group tag or add members to group tag\n   {pn} del <groupTagName> <@tags>: use to remove members from group tag\n   {pn} remove <groupTagName>: use to remove group tag\n   {pn} rename <groupTagName> | <newGroupTagName>: use to rename group tag\n   {pn} [list | all]: use to view list of group tag in your group chat\n   {pn} info <groupTagName>: use to view info of group tag",
 		text: {
 			noGroupTagName: "Please enter group tag name",
 			noMention: "You haven't tagged any member to add to group tag",
@@ -353,6 +329,7 @@ module.exports = {
 			roleText0: "0 (All users)",
 			roleText1: "1 (Group administrators)",
 			roleText2: "2 (Admin bot)",
+			roleText3: "3 (Developer bot)",
 			roleText0setRole: "0 (set role, all users)",
 			roleText1setRole: "1 (set role, group administrators)",
 			pageNotFound: "Page %1 does not exist"
@@ -377,7 +354,7 @@ module.exports = {
 	},
 	notification: {
 		description: "Send notification from admin to all box",
-		guide: "{pn} <tin nhắn>",
+		guide: "{pn} <message>",
 		text: {
 			missingMessage: "Please enter the message you want to send to all groups",
 			notification: "Notification from admin bot to all chat groups (do not reply to this message)",
@@ -387,8 +364,8 @@ module.exports = {
 		}
 	},
 	prefix: {
-		description: "Thay đổi dấu lệnh của bot trong box chat của bạn hoặc cả hệ thống bot (chỉ admin bot)",
-		guide: "   {pn} <new prefix>: change new prefix in your box chat\n   Example:\n    {pn} #\n\n   {pn} <new prefix> -g: change new prefix in system bot (only admin bot)\n   Example:\n    {pn} # -g\n\n   {pn} reset: change prefix in your box chat to default",
+		description: "Change bot prefix in your box chat or whole system",
+		guide: "   {pn} <new prefix>: change new prefix in your box chat\n   {pn} <new prefix> -g: change new prefix in system bot\n   {pn} reset: change prefix in your box chat to default",
 		text: {
 			reset: "Your prefix has been reset to default: %1",
 			onlyAdmin: "Only admin can change prefix of system bot",
@@ -414,7 +391,7 @@ module.exports = {
 	},
 	refresh: {
 		description: "refresh information of group chat or user",
-		guide: "   {pn} [thread | group]: refresh information of your group chat\n   {pn} group <threadID>: refresh information of group chat by ID\n\n   {pn} user: refresh information of your user\n   {pn} user [<userID> | @tag]: refresh information of user by ID",
+		guide: "   {pn} [thread | group]: refresh information of your group chat\n   {pn} group <threadID>: refresh information of group chat by ID\n   {pn} user: refresh information of your user\n   {pn} user [<userID> | @tag]: refresh information of user by ID",
 		text: {
 			refreshMyThreadSuccess: "✅ | Refresh information of your group chat successfully!",
 			refreshThreadTargetSuccess: "✅ | Refresh information of group chat %1 successfully!"
@@ -422,11 +399,11 @@ module.exports = {
 	},
 	rules: {
 		description: "Create/view/add/edit/change position/delete group rules of you",
-		guide: "   {pn} [add | -a] <rule to add>: add rule for group.\n   {pn}: view group rules.\n   {pn} [edit | -e] <n> <content after edit>: edit rule number n.\n   {pn} [move | -m] <stt1> <stt2> swap position of rule number <stt1> and <stt2>.\n   {pn} [delete | -d] <n>: delete rule number n.\n   {pn} [remove | -r]: delete all rules of group.\n\n   Example:\n    {pn} add don't spam\n    {pn} move 1 3\n    {pn} -e 1 don't spam message in group\n    {pn} -r"
+		guide: "   {pn} [add | -a] <rule to add>: add rule for group.\n   {pn}: view group rules.\n   {pn} [edit | -e] <n> <content after edit>: edit rule number n.\n   {pn} [move | -m] <stt1> <stt2> swap position of rule number <stt1> and <stt2>.\n   {pn} [delete | -d] <n>: delete rule number n.\n   {pn} [remove | -r]: delete all rules of group."
 	},
 	sendnoti: {
 		description: "Create and send notification to groups that you manage",
-		guide: "   {pn} create <groupName>: Create a new notification group with name <groupName>\n   Example:\n    {pn} create TEAM1\n\n   {pn} add <groupName>: add current box chat to notification group <groupName> (you must be admin of this box chat)\n   Example:\n    {pn} add TEAM1\n\n   {pn} delete: remove current box chat from notification group <groupName> (you must be creator of this group)\n   Example:\n    {pn} delete TEAM1\n\n   {pn} send <groupName> | <message>: send notification to all groups in notification group <groupName> (you must be admin of those groups)\n   Example:\n    {pn} remove TEAM1\n\n   {pn} remove <groupName>: remove notification group <groupName> (you must be creator of notification group <groupName>)\n   Example:\n    {pn} remove TEAM1",
+		guide: "   {pn} create <groupName>: Create a new notification group\n   {pn} add <groupName>: add current box chat to notification group\n   {pn} delete: remove current box chat from notification group\n   {pn} send <groupName> | <message>: send notification to all groups\n   {pn} remove <groupName>: remove notification group",
 		text: {
 			missingGroupName: "Please enter groupNoti name",
 			groupNameExists: "Notification group with name %1 has been created by you before, please choose another name",
@@ -454,7 +431,7 @@ module.exports = {
 	},
 	setalias: {
 		description: "Add an alias for any command in your group",
-		guide: "  This command is used to add/remove alias for any command in your group\n   {pn} add <alias> <command>: add an alias for the command in your group\n   {pn} add <alias> <command> -g: add an alias for the command in the whole system (only bot admin)\nExample:\n    {pn} add ctrk customrankcard\n\n   {pn} [remove | rm] <alias> <command>: remove an alias for the command in your group\n   {pn} [remove | rm] <alias> <command> -g: remove an alias for the command in the whole system (only bot admin)\nExample:\n    {pn} rm ctrk customrankcard\n\n   {pn} list: list all alias for commands in your group\n   {pn} list -g: list all alias for commands in the whole system"
+		guide: "  This command is used to add/remove alias for any command in your group\n   {pn} add <alias> <command>: add an alias for the command in your group\n   {pn} add <alias> <command> -g: add an alias for the command in the whole system\n   {pn} [remove | rm] <alias> <command>: remove an alias for the command in your group\n   {pn} [remove | rm] <alias> <command> -g: remove an alias for the command in the whole system\n   {pn} list: list all alias for commands in your group\n   {pn} list -g: list all alias for commands in the whole system"
 	},
 	setavt: {
 		description: "Change bot avatar",
@@ -476,10 +453,7 @@ module.exports = {
 	setleave: {
 		description: "Edit content/turn on/off leave message when member leave your group chat",
 		guide: {
-			body: "   {pn} on: Turn on leave message\n   {pn} off: Turn off leave message\n   {pn} text [<content> | reset]: edit text content or reset to default, available shortcuts:\n  + {userName}: name of member who leave group\n  + {userNameTag}: name of member who leave group (tag)\n  + {boxName}: name of group chat\n  + {type}: leave/kicked by admin\n  + {session}: session in day\n\n   Example:\n    {pn} text {userName} has {type} group, see you again 🤧\n\n   Reply or send a message with file with content {pn} file: to add attachment file to leave message (image, video, audio)\n\nExample:\n   {pn} file reset: reset file",
-			attachment: {
-				[`${process.cwd()}/scripts/cmds/assets/guide/setleave/setleave_en_1.png`]: "https://i.ibb.co/2FKJHJr/guide1.png"
-			}
+			body: "   {pn} on: Turn on leave message\n   {pn} off: Turn off leave message\n   {pn} text [<content> | reset]: edit text content or reset to default\n   Example:\n    {pn} text {userName} has {type} group, see you again 🤧"
 		},
 		text: {
 			missingContent: "Please enter content",
@@ -494,19 +468,15 @@ module.exports = {
 	setname: {
 		description: "Change nickname of all members in chat or members tagged by a format",
 		guide: {
-			body: "   {pn} <nick name>: change nickname of yourself\n   {pn} @tags <nick name>: change nickname of members tagged\n   {pn} all <nick name>: change nickname of all members in chat\n\nWith available shortcuts:\n   + {userName}: name of member\n   + {userID}: ID of member\n\n   Example: (see image)",
-			attachment: {
-				[`${process.cwd()}/scripts/cmds/assets/guide/setname_1.png`]: "https://i.ibb.co/gFh23zb/guide1.png",
-				[`${process.cwd()}/scripts/cmds/assets/guide/setname_2.png`]: "https://i.ibb.co/BNWHKgj/guide2.png"
-			}
+			body: "   {pn} <nick name>: change nickname of yourself\n   {pn} @tags <nick name>: change nickname of members tagged\n   {pn} all <nick name>: change nickname of all members in chat\n\nWith available shortcuts:\n   + {userName}: name of member\n   + {userID}: ID of member"
 		},
 		text: {
 			error: "An error has occurred, try turning off the invite link feature in the group and try again later"
 		}
 	},
 	setrole: {
-		description: "Edit role of command (commands with role < 2)",
-		guide: "   {pn} <commandName> <new role>: set new role for command\n   With:\n   + <commandName>: command name\n   + <new role>: new role of command with:\n   + <new role> = 0: command can be used by all members in group\n   + <new role> = 1: command can be used by admin only\n   + <new role> = default: reset role of command to default\n   Example:\n    {pn} rank 1: (command rank can be used by admin only)\n    {pn} rank 0: (command rank can be used by all members in group)\n    {pn} rank default: reset to default\n—————\n   {pn} [viewrole|view|show]: view role of edited commands",
+		description: "Edit role of command",
+		guide: "   {pn} <commandName> <new role>: set new role for command\n   With:\n   + <commandName>: command name\n   + <new role>: new role of command with:\n   + <new role> = 0: command can be used by all members in group\n   + <new role> = 1: command can be used by admin only\n   + <new role> = default: reset role of command to default\n   Example:\n    {pn} rank 1: (command rank can be used by admin only)\n    {pn} rank 0: (command rank can be used by all members in group)\n    {pn} rank default: reset to default\n   {pn} [viewrole|view|show]: view role of edited commands",
 		text: {
 			noEditedCommand: "✅ Your group has no edited command",
 			editedCommand: "⚠️ Your group has edited commands:\n",
@@ -520,10 +490,7 @@ module.exports = {
 	setwelcome: {
 		description: "Edit welcome message content when new member join your group chat",
 		guide: {
-			body: "   {pn} text [<content> | reset]: edit text content or reset to default, with some shortcuts:\n  + {userName}: new member name\n  + {userNameTag}: new member name (tag)\n  + {boxName}:  group chat name\n  + {multiple}: you || you guys\n  + {session}:  session in day\n\n   Example:\n    {pn} text Hello {userName}, welcome to {boxName}, have a nice day {multiple}\n\n   Reply (phản hồi) or send a message with file with content {pn} file: to add file attachments to welcome message (image, video, audio)\n\n   Example:\n    {pn} file reset: delete file attachments",
-			attachment: {
-				[`${process.cwd()}/scripts/cmds/assets/guide/setwelcome/setwelcome_en_1.png`]: "https://i.ibb.co/vsCz0ks/setwelcome-en-1.png"
-			}
+			body: "   {pn} text [<content> | reset]: edit text content or reset to default\n   Example:\n    {pn} text Hello {userName}, welcome to {boxName}, have a nice day"
 		},
 		text: {
 			missingContent: "Please enter welcome message content",
@@ -558,7 +525,7 @@ module.exports = {
 	},
 	simsimi: {
 		description: "Chat with simsimi",
-		guide: "   {pn} [on | off]: turn on/off simsimi\n\n   {pn} <word>: chat with simsimi\n   Example:\n    {pn} hi",
+		guide: "   {pn} [on | off]: turn on/off simsimi\n   {pn} <word>: chat with simsimi\n   Example:\n    {pn} hi",
 		text: {
 			turnedOn: "Turned on simsimi successfully!",
 			turnedOff: "Turned off simsimi successfully!",
@@ -576,7 +543,7 @@ module.exports = {
 	},
 	thread: {
 		description: "Manage group chat in bot system",
-		guide: "   {pn} [find | -f | search | -s] <name to find>: search group chat in bot data by name\n   {pn} [find | -f | search | -s] [-j | joined] <name to find>: search group chat in bot data that bot still joined by name\n   {pn} [ban | -b] [<tid> | leave blank] <reason>: use to ban group with id <tid> or current group using bot\n   Example:\n    {pn} ban 3950898668362484 spam bot\n    {pn} ban spam too much\n    {pn} unban [<tid> | leave blank] to unban group with id <tid> or current group",
+		guide: "   {pn} [find | -f | search | -s] <name to find>: search group chat in bot data by name\n   {pn} [ban | -b] [<tid> | leave blank] <reason>: use to ban group with id <tid> or current group\n   {pn} unban [<tid> | leave blank] to unban group with id <tid> or current group",
 		text: {
 			noPermission: "You don't have permission to use this feature",
 			found: "🔎 Found %1 group matching the keyword \"%3\" in bot data:\n%3",
@@ -625,12 +592,12 @@ module.exports = {
 	},
 	user: {
 		description: "Manage users in bot system",
-		guide: "   {pn} [find | -f | search | -s] <name to find>: search for users in bot data by name\n\n   {pn} [ban | -b] [<uid> | @tag | reply message] <reason>: to ban user with id <uid> or tagged user or sender of message replied using bot\n\n   {pn} unban [<uid> | @tag | reply message]: to unban user using bot",
+		guide: "   {pn} [find | -f | search | -s] <name to find>: search for users in bot data by name\n   {pn} [ban | -b] [<uid> | @tag | reply message] <reason>: to ban user with id <uid> or tagged user or sender of message replied\n   {pn} unban [<uid> | @tag | reply message]: to unban user",
 		text: {
 			noUserFound: "❌ No user found with name matching keyword: \"%1\" in bot data",
 			userFound: "🔎 Found %1 user with name matching keyword \"%2\" in bot data:\n%3",
-			uidRequired: "Uid of user to ban cannot be empty, please enter uid or tag or reply message of 1 user by user ban <uid> <reason>",
-			reasonRequired: "Reason to ban user cannot be empty, please enter uid or tag or reply message of 1 user by user ban <uid> <reason>",
+			uidRequired: "Uid of user to ban cannot be empty",
+			reasonRequired: "Reason to ban user cannot be empty",
 			userHasBanned: "User with id [%1 | %2] has been banned before:\n» Reason: %3\n» Date: %4",
 			userBanned: "User with id [%1 | %2] has been banned:\n» Reason: %3\n» Date: %4",
 			uidRequiredUnban: "Uid of user to unban cannot be empty",
@@ -640,7 +607,7 @@ module.exports = {
 	},
 	videofb: {
 		description: "Download video/story from facebook (public)",
-		guide: "   {pn} <url video/story>: tải video từ facebook",
+		guide: "   {pn} <url video/story>: download video from facebook",
 		text: {
 			missingUrl: "Please enter the facebook video/story (public) url you want to download",
 			error: "An error occurred while downloading the video",
@@ -650,9 +617,9 @@ module.exports = {
 	},
 	warn: {
 		description: "warn member in group, if they have 3 warns, they will be banned",
-		guide: "   {pn} @tag <reason>: warn member\n   {pn} list: view list of warned members\n   {pn} listban: view list of banned members\n   {pn} info [@tag | <uid> | leave blank]: view warn info of tagged member or uid or yourself\n   {pn} unban <uid>: unban member by uid\n   {pn} unwarn <uid> [<warn number> | leave blank]: unwarn member by uid and warn number\n   {pn} warn reset: reset all warn data\n⚠️ You need to set admin for bot to auto kick banned members",
+		guide: "   {pn} @tag <reason>: warn member\n   {pn} list: view list of warned members\n   {pn} listban: view list of banned members\n   {pn} info [@tag | <uid> | leave blank]: view warn info of tagged member or uid or yourself\n   {pn} unban <uid>: unban member by uid\n   {pn} unwarn <uid> [<warn number> | leave blank]: unwarn member by uid and warn number\n   {pn} warn reset: reset all warn data",
 		text: {
-			list: "List of members who have been warned:\n%1\n\nTo view the details of the warnings, use the \"%2warn info [@tag | <uid> | leave blank]\" command: to view the warning information of the tagged person or uid or yourself",
+			list: "List of members who have been warned:\n%1",
 			listBan: "List of members who have been warned 3 times and banned from the box:\n%1",
 			listEmpty: "Your group has no members who have been warned",
 			listBanEmpty: "Your group has no members banned from the box",
@@ -671,8 +638,7 @@ module.exports = {
 			resetWarnSuccess: "✅ Successfully reset warning data",
 			noPermission4: "❌ Only group administrators can warn members in the group",
 			invalidUid4: "⚠️ You need to tag or reply to the message of the person you want to warn",
-			warnSuccess: "⚠️ Warned member %1 times %2\n- Uid: %3\n- Reason: %4\n- Date Time: %5\nThis member has been warned 3 times and banned from the box, to unban use the command \"%6warn unban <uid>\" (with uid is the uid of the person you want to unban)",
-			noPermission5: "⚠️ Bot needs administrator permissions to kick banned members",
+			warnSuccess: "⚠️ Warned member %1 times %2\n- Uid: %3\n- Reason: %4\n- Date Time: %5\nThis member has been warned 3 times and banned from the box",
 			warnSuccess2: "⚠️ Warned member %1 times %2\n- Uid: %3\n- Reason: %4\n- Date Time: %5\nIf this person violates %6 more times, they will be banned from the box",
 			hasBanned: "⚠️ The following members have been warned 3 times before and banned from the box:\n%1",
 			failedKick: "⚠️ An error occurred when kicking the following members:\n%1"
