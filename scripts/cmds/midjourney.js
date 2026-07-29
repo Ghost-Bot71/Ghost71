@@ -12,7 +12,7 @@ module.exports = {
     role: 0,
     shortDescription: "Generate 4 Midjourney images",
     longDescription: "Generates 4 images and sends them directly as attachments",
-    category: "AI-IMAGE",
+    category: "AI & IMAGE GENERATION",
     guide: "{pn} [your prompt]"
   },
 

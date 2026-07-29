@@ -9,7 +9,7 @@ module.exports = {
     countDown: 5,
     role: 0,
     description: "Play a random quiz with auto-unsend and user restriction",
-    category: "games",
+    category: "GAMES",
     guide: "{pn} | {pn} list"
   },
 

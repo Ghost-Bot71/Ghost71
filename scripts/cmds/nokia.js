@@ -9,7 +9,7 @@ module.exports = {
     author: "xalman",
     countDown: 5,
     role: 0,
-    category: "fun",
+    category: "FUN & SOCIAL",
     guide: { en: "{pn} @mention / reply / UID" }
   },
 

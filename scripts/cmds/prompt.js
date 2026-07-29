@@ -9,7 +9,7 @@ module.exports = {
     countDown: 5,
     role: 0,
     shortDescription: "Generates a prompt from image",
-    category: "AI",
+    category: "AI & IMAGE GENERATION",
     guide: "{pn} [reply to image]"
   },
 

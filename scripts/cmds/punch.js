@@ -14,7 +14,7 @@ module.exports = {
     role: 0,
     shortDescription: "Punch a user with circular avatars",
     longDescription: "Generate a punch image (Saitama vs Goku) featuring circular avatars of the sender and the victim.",
-    category: "fun",
+    category: "FUN & SOCIAL",
     guide: "{pn} @tag or reply to a message"
   },
 

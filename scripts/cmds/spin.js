@@ -1,87 +1,229 @@
+const axios = require("axios");
+const Canvas = require("canvas");
+const fs = require("fs");
+const path = require("path");
+const GIFEncoder = require("gif-encoder-2");
+
 module.exports = {
   config: {
     name: "spin",
     version: "1.0",
-    author: "T A N J I L",
-    shortDescription: {
-      en: "Spin and win game",
-    },
-    longDescription: {
-      en: "Try your luck in this spin game!",
-    },
-    category: "Game",
+    author: "xalman",
+    role: 0,
+    countDown: 5,
+    category: "GAMES",
+    guide: {
+      en: "{pn} <amount>"
+    }
   },
-  langs: {
-    en: {
-      invalid_amount: "Enter a valid and positive amount to have a chance to win.",
-      not_enough_money: "Check your balance if you have that amount.",
-      spin_message: "Spinning...",
-      win_message: "Congratulations! You won $%1!",
-      lose_message: "Oops! You lost $%1. Better luck next time!",
-      jackpot_message: "JACKPOT! You won $%1 with three %2 symbols!",
-    },
-  },
-  onStart: async function ({ args, message, event, usersData, getLang }) {
-    const { senderID } = event;
-    const userData = await usersData.get(senderID);
-    const amount = parseInt(args[0]);
 
-    if (isNaN(amount) || amount <= 0) {
-      return message.reply(getLang("invalid_amount"));
+  onStart: async ({ message, event, args, usersData, api }) => {
+    const { senderID, threadID } = event;
+
+    const formatMoney = (num) => {
+      const n = Number(num);
+      if (n === Infinity || isNaN(n)) return "∞";
+      if (n < 1000) return n.toFixed(0);
+      const units = [
+        { v: 1e12, s: "T" },
+        { v: 1e9, s: "B" },
+        { v: 1e6, s: "M" },
+        { v: 1e3, s: "K" }
+      ];
+      for (let u of units) {
+        if (n >= u.v)
+          return (n / u.v).toFixed(2).replace(/\.00$/, "") + u.s;
+      }
+      return n.toLocaleString();
+    };
+
+    function parseAmount(input) {
+      if (!input) return NaN;
+      let a = input.toLowerCase();
+      if (a.endsWith("k")) return parseFloat(a) * 1e3;
+      if (a.endsWith("m")) return parseFloat(a) * 1e6;
+      if (a.endsWith("b")) return parseFloat(a) * 1e9;
+      if (a.endsWith("t")) return parseFloat(a) * 1e12;
+      return parseInt(a);
     }
 
-    if (amount > userData.money) {
-      return message.reply(getLang("not_enough_money"));
+    const betAmount = parseAmount(args[0]);
+    const minBet = 100;
+    const maxBet = 1000000000000;
+
+    if (isNaN(betAmount) || betAmount < minBet) {
+      return message.reply(`🎰 Minimum bet is 100$\nExample: /spin 1k`);
     }
 
-    const chance = Math.random(); // 0.0 - 1.0
-    let isWin = chance < 0.6; // 60% chance to win
+    if (betAmount > maxBet) {
+      return message.reply(`🚫 Max bet: ${formatMoney(maxBet)}$`);
+    }
 
-    const slots = ["💚", "💛", "💙"];
-    const slot1 = slots[Math.floor(Math.random() * slots.length)];
-    const slot2 = slots[Math.floor(Math.random() * slots.length)];
-    const slot3 = slots[Math.floor(Math.random() * slots.length)];
+    let userData = await usersData.get(senderID);
+    if (!userData) {
+      userData = { money: 0 };
+    }
+    const currentMoney = Number(userData.money || 0);
 
-    const winnings = calculateWinnings(slot1, slot2, slot3, amount, isWin);
+    if (betAmount > currentMoney) {
+      return message.reply(`💸 Not enough balance!\nBalance: ${formatMoney(currentMoney)}$`);
+    }
 
-    await usersData.set(senderID, {
-      money: userData.money + winnings,
-      data: userData.data,
-    });
+    if (!global.spinLimit) global.spinLimit = {};
+    const now = Date.now();
+    if (!global.spinLimit[senderID] || (now - global.spinLimit[senderID].lastReset > 3600000)) {
+      global.spinLimit[senderID] = { count: 0, lastReset: now };
+    }
 
-    const messageText = getSpinResultMessage(slot1, slot2, slot3, winnings, getLang, amount);
-    return message.reply(messageText);
-  },
+    const maxSpins = 50;
+    if (global.spinLimit[senderID].count >= maxSpins) {
+      return message.reply(`🚫 Daily limit reached (${maxSpins} spins)`);
+    }
+
+    const segments = [
+      { emoji: "🍎", multiplier: 0 },
+      { emoji: "🍐", multiplier: 0 },
+      { emoji: "🍑", multiplier: 1 },
+      { emoji: "🍒", multiplier: 2 },
+      { emoji: "🍓", multiplier: 3 },
+      { emoji: "🍇", multiplier: 4 },
+      { emoji: "🍉", multiplier: 5 },
+      { emoji: "🍊", multiplier: 10 }
+    ];
+
+    const totalSegments = segments.length;
+    const segmentAngle = (2 * Math.PI) / totalSegments;
+
+    const spinResult = Math.floor(Math.random() * totalSegments);
+    const resultSegment = segments[spinResult];
+    const multiplier = resultSegment.multiplier;
+    const win = multiplier > 0;
+    const bonus = win ? betAmount * multiplier : 0;
+    const finalMoney = win ? currentMoney + bonus : currentMoney - betAmount;
+
+    userData.money = finalMoney;
+    await usersData.set(senderID, userData);
+
+    global.spinLimit[senderID].count++;
+
+    const status = win ? `WIN ${multiplier}x 🎉` : "LOSE 💀";
+
+    const sent = await message.reply("🌀 Spinning the wheel...");
+
+    const W = 400;
+    const H = 400;
+    const centerX = W / 2;
+    const centerY = H / 2;
+    const radius = 160;
+
+    const frames = 30;
+    const encoder = new GIFEncoder(W, H);
+    encoder.setDelay(80);
+    encoder.setRepeat(0);
+    encoder.start();
+
+    for (let f = 0; f < frames; f++) {
+      const canvas = Canvas.createCanvas(W, H);
+      const ctx = canvas.getContext("2d");
+
+      ctx.fillStyle = "#1a0a2e";
+      ctx.fillRect(0, 0, W, H);
+
+      const progress = f / frames;
+      const totalRotation = (2 * Math.PI) * 2.5;
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const currentAngle = eased * totalRotation;
+
+      const finalAngle = spinResult * segmentAngle;
+      const rotation = currentAngle + finalAngle;
+
+      for (let i = 0; i < totalSegments; i++) {
+        const start = i * segmentAngle + rotation;
+        const end = start + segmentAngle;
+
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, start, end);
+        ctx.closePath();
+
+        ctx.fillStyle = i % 2 === 0 ? "#2d1b4e" : "#3d2b5e";
+        ctx.fill();
+        ctx.strokeStyle = "#d4af37";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        const midAngle = start + segmentAngle / 2;
+        const textX = centerX + Math.cos(midAngle) * (radius * 0.7);
+        const textY = centerY + Math.sin(midAngle) * (radius * 0.7);
+
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.font = "32px Arial";
+        ctx.fillStyle = "#ffffff";
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = "#000000";
+        ctx.fillText(segments[i].emoji, textX, textY);
+        ctx.font = "14px Arial";
+        ctx.fillStyle = "#d4af37";
+        ctx.fillText(segments[i].multiplier + "x", textX, textY + 30);
+      }
+
+      ctx.shadowBlur = 0;
+
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 20, 0, Math.PI * 2);
+      ctx.fillStyle = "#d4af37";
+      ctx.fill();
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      ctx.fillStyle = "#ff0000";
+      ctx.beginPath();
+      ctx.moveTo(W / 2 - 20, 20);
+      ctx.lineTo(W / 2 + 20, 20);
+      ctx.lineTo(W / 2, 5);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.font = "bold 20px Arial";
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "bottom";
+      ctx.fillText("SPIN", W / 2, H - 10);
+
+      encoder.addFrame(ctx);
+    }
+
+    encoder.finish();
+    const buffer = encoder.out.getData();
+
+    const cacheDir = path.join(__dirname, "cache");
+    if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir, { recursive: true });
+    const filePath = path.join(cacheDir, `spin_${Date.now()}.gif`);
+    fs.writeFileSync(filePath, buffer);
+
+    await api.unsendMessage(sent.messageID);
+
+    const msg = `🎡 𝗦𝗣𝗜𝗡 𝗪𝗛𝗘𝗘𝗟
+
+${win ? "🎉" : "💀"} ${status}
+📊 Result: ${resultSegment.emoji} (${multiplier}x)
+💰 ${win ? "Won: " + formatMoney(bonus) : "Lost: " + formatMoney(betAmount)}$
+💳 Balance: ${formatMoney(finalMoney)}$
+📊 Usage: ${global.spinLimit[senderID].count}/${maxSpins}`;
+
+    return api.sendMessage(
+      {
+        body: msg,
+        attachment: fs.createReadStream(filePath)
+      },
+      threadID,
+      () => {
+        if (fs.existsSync(filePath)) {
+          try { fs.unlinkSync(filePath); } catch {}
+        }
+      }
+    );
+  }
 };
-
-function calculateWinnings(slot1, slot2, slot3, betAmount, isWin) {
-  if (!isWin) {
-    return -betAmount;
-  }
-
-  if (slot1 === "💙" && slot2 === "💙" && slot3 === "💙") {
-    return betAmount * 10;
-  }
-
-  if (slot1 === slot2 && slot2 === slot3) {
-    return betAmount * 4;
-  } else if (slot1 === slot2 || slot2 === slot3 || slot1 === slot3) {
-    return betAmount * 2;
-  } else {
-    return -betAmount;
-  }
-}
-
-function getSpinResultMessage(slot1, slot2, slot3, winnings, getLang, amount) {
-  const result = `╭──• SPIN •──╮\n│\n│   💰 Amount: $${amount}\n│\n├──────────────\n│   🎰 Result: [ ${slot1} | ${slot2} | ${slot3} ]\n╰──────────────╯`;
-
-  if (winnings > 0) {
-    if (slot1 === "💙" && slot2 === "💙" && slot3 === "💙") {
-      return `${getLang("jackpot_message", winnings, "💙")}\n${result}`;
-    } else {
-      return `${getLang("win_message", winnings)}\n${result}`;
-    }
-  } else {
-    return `${getLang("lose_message", -winnings)}\n${result}`;
-  }
-}

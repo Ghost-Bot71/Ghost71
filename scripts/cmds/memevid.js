@@ -11,7 +11,7 @@ module.exports = {
     countDown: 5,
     role: 0,
     description: "Get a random meme video",
-    category: "media",
+    category: "ANIME & MEDIA",
     guide: "{pn}"
   },
 

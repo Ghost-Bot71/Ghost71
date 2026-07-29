@@ -14,7 +14,7 @@ module.exports = {
     role: 0,
     shortDescription: "Custom slap image with circular avatars",
     longDescription: "Custom slap image with your own template and circular avatars",
-    category: "𝗙𝗨𝗡 & 𝗚𝗔𝗠𝗘",
+    category: "FUN & SOCIAL",
     guide: { en: "{pn} @tag" }
   },
 

@@ -12,7 +12,7 @@ module.exports = {
     role: 0,
     shortDescription: "RIP image generation",
     longDescription: "Create a RIP tombstone image with user avatar",
-    category: "fun",
+    category: "FUN & SOCIAL",
     guide: {
       en: "{pn} [@mention / reply / UID]"
     }

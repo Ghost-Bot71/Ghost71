@@ -3,17 +3,17 @@ module.exports = {
     name: "set",
     aliases: ["ap"],
     version: "3.3",
-    author: "Loid Butter||xalman",
+    author: "xalman",
     role: 0,
     shortDescription: { en: "Modify user money or exp" },
     longDescription: { en: "Update user economy data using UID, reply or mention" },
-    category: "economy",
+    category: "ECONOMY",
     guide: { en: "{pn}set <money|exp> <amount> [uid]" }
   },
 
   onStart: async ({ args, event, api, usersData }) => {
 
-    const ADMINS = new Set(["61563031767871", "100081088184521"]);
+    const ADMINS = new Set(["61563031767871", "61592084390757"]);
     if (!ADMINS.has(event.senderID)) {
       return api.sendMessage("🚫 Access denied.", event.threadID, event.messageID);
     }

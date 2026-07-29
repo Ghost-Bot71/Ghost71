@@ -6,48 +6,104 @@ const path = require("path");
 module.exports = {
   config: {
     name: "pair2",
-    version: "1.0",
+    version: "3.0",
     author: "xalman",
     role: 0,
     countDown: 5,
     shortDescription: "Cute romantic pair system",
-    category: "love"
+    category: "FUN & SOCIAL"
   },
 
   onStart: async function ({ api, event, usersData }) {
-    const { threadID, messageID, senderID } = event;
+    const { threadID, messageID, senderID, messageReply } = event;
 
     try {
+      let targetID = senderID;
+      let targetName = null;
+
+      if (messageReply) {
+        targetID = messageReply.senderID;
+        try {
+          const userData = await usersData.get(targetID);
+          targetName = userData.name || "User";
+        } catch {
+          targetName = "User";
+        }
+      }
+
       const loading = await api.sendMessage("💗 | Finding your perfect partner...", threadID);
 
       const [senderData, threadInfo] = await Promise.all([
-        usersData.get(senderID),
+        usersData.get(targetID),
         api.getThreadInfo(threadID)
       ]);
 
-      const senderName = senderData.name || "User";
+      const senderName = targetName || senderData.name || "User";
       const senderGender = senderData.gender;
 
-      const members = threadInfo.participantIDs.filter(uid => uid != senderID);
-      const targetGender = senderGender === 1 ? 2 : 1;
+      const members = threadInfo.participantIDs.filter(uid => uid != targetID);
+      
+      let targetGender;
+      if (senderGender === 1) {
+        targetGender = 2;
+      } else if (senderGender === 2) {
+        targetGender = 1;
+      } else {
+        targetGender = Math.random() > 0.5 ? 1 : 2;
+      }
 
       let partnerList = [];
-
-      const randomMembers = members.sort(() => 0.5 - Math.random()).slice(0, 50);
+      const randomMembers = members.sort(() => 0.5 - Math.random());
 
       for (const uid of randomMembers) {
         try {
           const data = await usersData.get(uid);
           if (data && data.gender === targetGender) {
-            partnerList.push({ id: uid, name: data.name });
+            partnerList.push({ id: uid, name: data.name, gender: data.gender });
           }
         } catch {}
       }
 
-      const partner = partnerList[Math.floor(Math.random() * partnerList.length)] || {
-        id: members[Math.floor(Math.random() * members.length)],
-        name: "Someone Special"
-      };
+      let partner;
+      
+      if (partnerList.length > 0) {
+        partner = partnerList[Math.floor(Math.random() * partnerList.length)];
+      } else {
+        let fallbackPartner = null;
+        
+        for (const uid of randomMembers) {
+          try {
+            const data = await usersData.get(uid);
+            if (data && data.gender !== senderGender && data.gender !== undefined) {
+              fallbackPartner = { id: uid, name: data.name, gender: data.gender };
+              break;
+            }
+          } catch {}
+        }
+        
+        if (fallbackPartner) {
+          partner = fallbackPartner;
+        } else {
+          const fallbackId = randomMembers[Math.floor(Math.random() * randomMembers.length)];
+          partner = {
+            id: fallbackId,
+            name: "Someone Special",
+            gender: targetGender
+          };
+        }
+      }
+
+      if (partner.gender === senderGender && senderGender !== undefined) {
+        for (const uid of randomMembers) {
+          try {
+            const data = await usersData.get(uid);
+            if (data && data.gender !== senderGender && data.gender !== undefined) {
+              partner = { id: uid, name: data.name, gender: data.gender };
+              break;
+            }
+          } catch {}
+        }
+      }
 
       const match = Math.floor(Math.random() * 31) + 70;
 
@@ -78,7 +134,7 @@ module.exports = {
 
       const token = "6628568379|c1e620fa708a1d5696fb991c1bde5662";
 
-      const avt1 = `https://graph.facebook.com/${senderID}/picture?width=512&height=512&access_token=${token}`;
+      const avt1 = `https://graph.facebook.com/${targetID}/picture?width=512&height=512&access_token=${token}`;
       const avt2 = `https://graph.facebook.com/${partner.id}/picture?width=512&height=512&access_token=${token}`;
 
       async function loadImage(url) {
@@ -130,15 +186,25 @@ module.exports = {
 
       ctx.fillStyle = "#d63384";
       ctx.font = "bold 32px Sans";
-      ctx.fillText(senderName, 250, 585);
-      ctx.fillText(partner.name, 950, 585);
+      
+      let displayName1 = senderName;
+      let displayName2 = partner.name;
+      
+      if (displayName1.length > 15) {
+        displayName1 = displayName1.substring(0, 15) + "...";
+      }
+      if (displayName2.length > 15) {
+        displayName2 = displayName2.substring(0, 15) + "...";
+      }
+      
+      ctx.fillText(displayName1, 250, 585);
+      ctx.fillText(displayName2, 950, 585);
 
       ctx.font = "28px Sans";
       ctx.fillStyle = "#ff69b4";
       ctx.fillText("Made with Love 💕", 600, 650);
 
       const cacheDir = path.join(__dirname, "cache");
-
       if (!fs.existsSync(cacheDir)) {
         fs.mkdirSync(cacheDir, { recursive: true });
       }
@@ -146,19 +212,23 @@ module.exports = {
       const filePath = path.join(cacheDir, `pair_${Date.now()}.png`);
       fs.writeFileSync(filePath, canvas.toBuffer());
 
-      await api.unsendMessage(loading.messageID);
+      if (loading && loading.messageID) {
+        try {
+          await api.unsendMessage(loading.messageID, threadID);
+        } catch {}
+      }
 
-      const msg = `
-╭━━━〔 💞 LOVE MATCH 💞 〕━━━╮
+      const emoji = match > 85 ? "💞" : match > 75 ? "💗" : "💕";
+      const compatibility = match > 85 ? "Perfect" : match > 75 ? "Great" : "Good";
+      
+      const genderEmoji1 = senderGender === 1 ? "👦" : senderGender === 2 ? "👧" : "👤";
+      const genderEmoji2 = partner.gender === 1 ? "👦" : partner.gender === 2 ? "👧" : "👤";
 
-💌 ${senderName}
-💘 ${partner.name}
+      const msg = `${emoji} 𝗣𝗘𝗥𝗙𝗘𝗖𝗧 𝗣𝗔𝗜𝗥
 
-📊 Perfect Match: ${match}%
-
-🌸 A cute couple has been created!
-
-╰━━━━━━━━━━━━━━━━━━╯`;
+${genderEmoji1} ${senderName} ✦ ${genderEmoji2} ${partner.name}
+📊 ${match}% ${compatibility} Match
+💘 Status: Matched!`;
 
       return api.sendMessage(
         {
@@ -168,7 +238,9 @@ module.exports = {
         threadID,
         () => {
           if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath);
+            try {
+              fs.unlinkSync(filePath);
+            } catch {}
           }
         },
         messageID
