@@ -1,9 +1,8 @@
 module.exports = {
-	// You can customize the language here or directly in the command files
 	autoUpdateThreadInfo: {},
 	checkwarn: {
 		text: {
-			warn: "Member %1 has been warned 3 times before and has been banned from the chat box\n- Name: %1\n- Uid: %2\n- To unban, please use the \"%3warn unban <uid>\" command (with uid is the uid of the person you want to unban)",
+			warn: "Member %1 has been warned 3 times before and has been banned from the chat box\n- Name: %1\n- Uid: %2\n- To unban, please use the \"%3warn unban <uid>\" command",
 			needPermission: "Bot needs administrator permission to kick banned members"
 		}
 	},
