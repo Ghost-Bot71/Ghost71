@@ -13,7 +13,7 @@ module.exports = {
     role: 0,
     shortDescription: "কাউকে ডাস্টবিনে ফেলার ছবি",
     longDescription: "Create a Trash image with user avatar in a dustbin",
-    category: "fun",
+    category: "FUN & SOCIAL",
     guide: {
       en: "{pn} [@mention / reply / UID]"
     }

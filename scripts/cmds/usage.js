@@ -4,7 +4,7 @@ module.exports = {
  version: "2.1",
  author: "Chitron Bhattacharjee",
  description: "📊 Command usage statistics",
- category: "admin",
+ category: "box chat",
  role: 1,
  guide: {
  en: "{pn} [all] - Show command usage stats"

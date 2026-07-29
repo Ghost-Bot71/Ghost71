@@ -12,7 +12,7 @@ module.exports = {
     countDown: 5,
     shortDescription: "Play truth or dare",
     longDescription: "Reply with number to get truth or dare question.",
-    category: "game",
+    category: "GAMES",
     guide: { en: "{pn}" }
   },
 

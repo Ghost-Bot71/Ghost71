@@ -12,7 +12,7 @@ module.exports = {
     role: 0,
     shortDescription: "Video to audio",
     longDescription: "Convert replied video or URL to audio",
-    category: "media",
+    category: "ANIME & MEDIA",
     guide: {
       en: "{pn} <video url>\nReply to a video"
     }

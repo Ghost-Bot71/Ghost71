@@ -9,7 +9,7 @@ const config = {
   longDescription: {
     en: "Displays the top 15 users ranked by experience points including their IDs."
   },
-  category: "group",
+  category: "RANK",
   guide: {
     en: "{pn}"
   }

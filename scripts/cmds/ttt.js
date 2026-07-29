@@ -11,7 +11,7 @@ module.exports = {
     countDown: 5,
     role: 0,
     description: "Play Tic-Tac-Toe with a chance to win!",
-    category: "game",
+    category: "GAMES",
     guide: "{pn} x/o/delete/continue"
   },
 

@@ -1,6 +1,5 @@
 const os = require('os');
 const moment = require('moment-timezone');
-const axios = require('axios');
 const mongoose = require('mongoose');
 const Canvas = require('canvas');
 const fs = require('fs');
@@ -9,7 +8,7 @@ const path = require('path');
 module.exports = {
   config: {
     name: "uptime",
-    version: "3.0",
+    version: "3.5",
     role: 0,
     author: "xalman",
     description: "Premium Uptime for Goat Bot V2 with Image Generation",
@@ -21,9 +20,9 @@ module.exports = {
   onStart: async function ({ api, event }) {
     const { threadID, messageID, timestamp } = event;
 
-    const sendLoading = await api.sendMessage("⏳ Generating system analytics image...", threadID);
-
     try {
+      const sendLoading = await api.sendMessage("⏳ Generating system analytics image...", threadID);
+
       const uptime = process.uptime();
       const days = Math.floor(uptime / (3600 * 24));
       const hours = Math.floor((uptime % (3600 * 24)) / 3600);
@@ -63,18 +62,26 @@ module.exports = {
         osRelease: os.release()
       });
       
-      await api.unsendMessage(sendLoading.messageID);
+      if (sendLoading && sendLoading.messageID) {
+        await api.unsendMessage(sendLoading.messageID, threadID);
+      }
       
       return api.sendMessage({
         body: "𝐒𝐘𝐒𝐓𝐄𝐌 𝐀𝐍𝐀𝐋𝐘𝐓𝐈𝐂𝐒",
         attachment: fs.createReadStream(imagePath)
       }, threadID, () => {
-        fs.unlinkSync(imagePath);
+        try {
+          if (fs.existsSync(imagePath)) {
+            fs.unlinkSync(imagePath);
+          }
+        } catch (err) {
+          console.error(err);
+        }
       }, messageID);
       
     } catch (error) {
-      console.error("Uptime image generation error:", error);
-      await api.editMessage("❌ Failed to generate system analytics card.", sendLoading.messageID);
+      console.error(error);
+      await api.sendMessage("❌ Failed to generate system analytics card.", threadID, messageID);
     }
   }
 };
@@ -181,7 +188,7 @@ async function generateUptimeImage(data) {
 
   const ramPercent = (data.usedRam / (data.totalRam * 1024)) * 100;
   const ramBarWidth = 280;
-  const ramUsedWidth = (ramPercent / 100) * ramBarWidth;
+  const ramUsedWidth = Math.min((ramPercent / 100) * ramBarWidth, ramBarWidth);
   
   ctx.fillStyle = 'rgba(255,255,255,0.2)';
   ctx.fillRect(560, 200, ramBarWidth, 25);
@@ -222,7 +229,7 @@ async function generateUptimeImage(data) {
   ctx.font = '14px "Arial"';
   ctx.fillStyle = '#00ff88';
   
-  let cpuName = data.cpuModel;
+  let cpuName = data.cpuModel || 'Unknown';
   if (cpuName.length > 70) {
     cpuName = cpuName.substring(0, 70) + '...';
   }
@@ -327,14 +334,14 @@ async function generateUptimeImage(data) {
   }
   ctx.globalAlpha = 1;
 
-  const tempFilePath = path.join(__dirname, 'cache', `uptime_${Date.now()}.png`);
   const cacheDir = path.join(__dirname, 'cache');
   if (!fs.existsSync(cacheDir)) {
     fs.mkdirSync(cacheDir, { recursive: true });
   }
   
-  const buffer = canvas.toBuffer();
+  const tempFilePath = path.join(cacheDir, `uptime_${Date.now()}.png`);
+  const buffer = canvas.toBuffer('image/png');
   fs.writeFileSync(tempFilePath, buffer);
   
   return tempFilePath;
-}
+    }

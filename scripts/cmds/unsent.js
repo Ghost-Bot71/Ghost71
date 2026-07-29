@@ -2,7 +2,7 @@ module.exports = {
   config: {
     name: "unsent",
     aliases: ["u", "uns", "un", "r"],
-    version: "3.0",
+    version: "3.5",
     author: "xalman",
     countDown: 2,
     role: 0,
@@ -12,13 +12,13 @@ module.exports = {
 
   onChat: async function ({ api, event }) {
     const { messageReply, body, type } = event;
-    const triggers = ["unsent", "u", "uns", "un", "u"];
+    const triggers = ["unsent", "u", "uns", "un", "r"];
 
     if (!triggers.includes(body?.toLowerCase())) return;
 
     if (type === "message_reply" && messageReply.senderID === api.getCurrentUserID()) {
       try {
-        await api.unsendMessage(messageReply.messageID);
+        await api.unsendMessage(event.messageReply.messageID, event.threadID);
       } catch {}
     }
   },
@@ -28,7 +28,7 @@ module.exports = {
 
     if (type === "message_reply" && messageReply?.senderID === api.getCurrentUserID()) {
       try {
-        await api.unsendMessage(messageReply.messageID);
+        await api.unsendMessage(event.messageReply.messageID, event.threadID);
       } catch {}
     }
   }

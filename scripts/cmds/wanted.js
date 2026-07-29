@@ -12,7 +12,7 @@ module.exports = {
     role: 0,
     shortDescription: "Wanted poster generation",
     longDescription: "Create a Wanted poster with user avatar",
-    category: "fun",
+    category: "FUN & SOCIAL",
     guide: {
       en: "{pn} [@mention / reply / UID]"
     }

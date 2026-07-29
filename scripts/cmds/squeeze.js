@@ -19,7 +19,7 @@ module.exports = {
     countDown: 10,
     shortDescription: "Squeeze image effect",
     longDescription: "Create a squeeze image with tagged user. Cost: 1000 balance per use.",
-    category: "fun",
+    category: "FUN & SOCIAL",
     guide: {
       en: "{pn} @mention\n{pn} reply\n{pn} uid"
     }
