@@ -1,14 +1,14 @@
 {
-  "name": "goat-bot-v2",
-  "version": "1.5.35",
+  "name": "goat-bot-v3",
+  "version": "3.0.1",
   "description": "A simple Bot chat messenger using personal account. Made by NTKhang fixed by xalman",
   "main": "index.js",
   "engines": {
-    "node": "20.x",
+    "node": "22.x",
     "npm": ">=7.0.0"
   },
   "dependencies": {
-    "@neoaz07/nkxfca": "^1.0.9",
+    "@dongdev/fca-unofficial": " ^4.0.3",
     "@google-cloud/text-to-speech": "^5.4.0",
     "@google/genai": "^1.22.0",
     "@google/generative-ai": "^0.21.0",
@@ -43,7 +43,6 @@
     "express-fileupload": "^1.4.0",
     "express-rate-limit": "^6.5.2",
     "express-session": "^1.17.3",
-    "fca-eryxenx": "1.0.0",
     "fast-speedtest-api": "^0.3.2",
     "fetch-blob": "^4.0.0",
     "figlet": "^1.8.0",
@@ -68,6 +67,7 @@
     "json-to-graphql-query": "^2.3.0",
     "jsonlint-mod": "^1.7.6",
     "lodash": "^4.17.21",
+    "leven": "^3.1.0",
     "lodash.pad": "^4.5.1",
     "lodash.padend": "^4.6.1",
     "lodash.padstart": "^4.6.1",
@@ -93,6 +93,7 @@
     "request-promise": "^4.2.6",
     "searchitunes": "^2.5.4",
     "sequelize": "^6.19.0",
+    "shadowx-fca": "^10.0.0",
     "socket.io": "^4.5.1",
     "speakeasy": "^2.0.0",
     "sqlite3": "^5.0.2",
