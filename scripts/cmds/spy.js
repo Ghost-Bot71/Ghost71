@@ -1,7 +1,7 @@
 module.exports = {
   config: {
     name: "spy",
-    version: "1.5",
+    version: "2.0",
     author: "xalman",
     role: 0,
     countDown: 5,
@@ -30,24 +30,25 @@ module.exports = {
         api.getUserInfo(targetID, (err, result) => (err ? reject(err) : resolve(result)));
       });
 
+      const userInfo = fbData[targetID];
+      if (!userInfo) throw new Error("User not found");
+
       const avatarLink = `https://graph.facebook.com/${targetID}/picture?width=512&height=512&access_token=350685531728|62f8ce9f74b12f84c123cc23437a4a32`;
 
       const userRecord = await usersData.get(targetID);
       const requesterRecord = await usersData.get(requesterID);
-      const requesterName = requesterRecord.name || "Friend";
+      const requesterName = requesterRecord?.name || "Friend";
 
-      const fullName = fbData[targetID].name || "N/A";
-      const genderStr = fbData[targetID].gender === 1 ? "Female" : fbData[targetID].gender === 2 ? "Male" : "Unknown";
-      const isFriend = fbData[targetID].isFriend ? "✅ Yes" : "❌ No";
-      const birthday = fbData[targetID].isBirthday ? "🎉 Today!" : "🔒 Hidden";
-      const balance = userRecord.money || 0;
-      const xp = userRecord.exp || 0;
+      const fullName = userInfo.name || "N/A";
+      const genderMap = { MALE: "Male", FEMALE: "Female" };
+      const genderStr = genderMap[userInfo.gender] || "Unknown";
+      const isFriend = userInfo.isFriend ? "✅ Yes" : "❌ No";
+      const balance = userRecord?.money || 0;
+      const xp = userRecord?.exp || 0;
       const lvl = Math.floor(Math.sqrt(xp) * 0.1);
 
       const threadInfo = event.threadID ? await api.getThreadInfo(event.threadID) : {};
       const nickname = threadInfo.nicknames?.[targetID] || "—";
-
-      const location = fbData[targetID].hometown_name || "Unknown";
 
       const allUsers = await usersData.getAll();
       const rankIdx = allUsers
@@ -71,10 +72,8 @@ module.exports = {
 🏅 Rank       : ${rank}
 
 ⚧ Gender     : ${genderStr}
-🎂 Birthday  : ${birthday}
-📍 Location  : ${location}
 🤝 Friend     : ${isFriend}
-💌 Relation  : Single
+📍 Location   : Not available
 
 🔗 Profile   : https://www.facebook.com/${targetID}
 
