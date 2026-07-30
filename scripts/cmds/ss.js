@@ -1,36 +1,47 @@
-const axios = require('axios');
+const axios = require("axios");
 
 module.exports = {
   config: {
     name: "ss",
-    version: "2.2.0",
+    version: "3.0",
     author: "xalman",
     countDown: 5,
     role: 0,
-    description: "Capture website screenshot using Vercel API",
+    description: "Capture website screenshot (PC or mobile mode)",
     category: "tools",
-    guide: "{pn} <website_url>"
+    guide: "{pn} <url> [-mobile | -pc]"
   },
 
   onStart: async function ({ api, event, args }) {
     const { threadID, messageID } = event;
-    const site = args[0];
 
-    if (!site) {
-      return api.sendMessage("❌ Please provide a website URL!", threadID, messageID);
+    if (args.length === 0) {
+      return api.sendMessage("❌ Please provide a website URL.\nExample: /ss google.com -mobile", threadID, messageID);
     }
 
+    let url = args[0];
+    let mode = "pc";
+
+    if (args.length > 1) {
+      const flag = args[1].toLowerCase();
+      if (flag === "-mobile" || flag === "mobile") {
+        mode = "mobile";
+      } else if (flag === "-pc" || flag === "pc") {
+        mode = "pc";
+      }
+    }
+
+    const apiUrl = `https://xalman-apis.vercel.app/api/screenshot?url=${encodeURIComponent(url)}&mode=${mode}`;
+
     try {
-      const finalApiUrl = `https://xalman-apis.vercel.app/api/screenshot?url=${encodeURIComponent(site)}`;
-      const stream = await global.utils.getStreamFromURL(finalApiUrl);
-      
+      const stream = await global.utils.getStreamFromURL(apiUrl);
       return api.sendMessage({
-        body: `✅ Screenshot for: ${site}`,
+        body: `📸 Screenshot`,
         attachment: stream
       }, threadID, messageID);
-
-    } catch (e) {
-      return api.sendMessage(`❌ Error: ${e.message}`, threadID, messageID);
+    } catch (error) {
+      console.error(error);
+      return api.sendMessage(`❌ Failed to capture screenshot. Please check the URL and try again.`, threadID, messageID);
     }
   }
 };
