@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="https://iili.io/BB8Z89p.jpg" width="150" height="150" style="border-radius: 50%; border: 4px solid #7000ff; box-shadow: 0px 0px 35px rgba(112, 0, 255, 0.8); transition: 0.3s;" alt="NEGATIVE XALMAN" />
+  <img src="https://i.imgur.com/RMT8Tgj.jpeg" width="150" height="150" style="border-radius: 50%; border: 4px solid #7000ff; box-shadow: 0px 0px 35px rgba(112, 0, 255, 0.8); transition: 0.3s;" alt="NEGATIVE XALMAN" />
 </p>
 
 <h1 align="center">
