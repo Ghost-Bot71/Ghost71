@@ -93,7 +93,7 @@
     "request-promise": "^4.2.6",
     "searchitunes": "^2.5.4",
     "sequelize": "^6.19.0",
-    "shadowx-fca": "^10.0.0",
+    "shadowx-fca": "^10.1.0",
     "socket.io": "^4.5.1",
     "speakeasy": "^2.0.0",
     "sqlite3": "^5.0.2",
