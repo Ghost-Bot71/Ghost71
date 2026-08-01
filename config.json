@@ -68,7 +68,7 @@
   "nickNameBot": "🎀♡nx λi♡🦋くめ",
   "prefix": "/",
   "database": {
-    "type": "splite",
+    "type": "sqlite",
     "uriMongodb": "",
     "autoSyncWhenStart": false,
     "autoRefreshThreadInfoFirstTime": true,
