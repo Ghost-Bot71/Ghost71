@@ -3,7 +3,7 @@ module.exports = {
     name: "autosticker",
     version: "5.0",
     author: "xalman",
-    countDown: 1,
+    countDown: 3,
     role: 0,
     description: "Send a random sticker",
     category: "no prefix",
