@@ -1,17 +1,19 @@
+const cooldowns = {};
+
 module.exports = {
   config: {
     name: "autosticker",
-    version: "5.0",
+    version: "5.3",
     author: "xalman",
-    countDown: 3,
+    countDown: 5,
     role: 0,
-    description: "Send a random sticker",
+    description: "Send a random sticker with cooldown. Reply-stickers are ignored.",
     category: "no prefix",
     guide: ""
   },
 
   onChat: async function ({ message, event, api }) {
-    const { attachments, body, senderID } = event;
+    const { attachments, body, senderID, messageReply } = event;
 
     const stickerList = [
       "997237917529747",
@@ -64,14 +66,17 @@ module.exports = {
       return message.reply(msg);
     }
 
-    if (!attachments?.some(a => a.type === "sticker")) return;
+    const isSticker = attachments?.some(a => a.type === "sticker");
+    if (!isSticker) return;
 
-    const randomSticker =
-      stickerList[Math.floor(Math.random() * stickerList.length)];
+    if (messageReply) return;
 
-    return message.reply({
-      sticker: randomSticker
-    });
+    const now = Date.now();
+    if (cooldowns[senderID] && now - cooldowns[senderID] < 5000) return;
+    cooldowns[senderID] = now;
+
+    const randomSticker = stickerList[Math.floor(Math.random() * stickerList.length)];
+    return message.reply({ sticker: randomSticker });
   },
 
   onStart: async function () {}
