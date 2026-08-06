@@ -7,34 +7,6 @@ const { createCanvas, loadImage } = require('canvas');
 if (!global.temp.welcomeEvent)
     global.temp.welcomeEvent = {};
 
-const backgroundImages = [
-    "https://i.imgur.com/hRJZxJt.jpeg",
-    "https://i.imgur.com/XlwZfh7.jpeg",
-    "https://i.imgur.com/lZYcVAB.jpeg",
-    "https://i.imgur.com/vAHABbs.jpeg",
-    "https://i.imgur.com/3FINFm0.jpeg",
-    "https://i.imgur.com/FSZM3UR.jpeg",
-    "https://i.imgur.com/S6t4C2M.jpeg",
-    "https://i.imgur.com/qmpQiny.jpeg"
-];
-
-const backgroundCache = new Map();
-
-async function loadBackgroundImage(url) {
-    if (backgroundCache.has(url)) return backgroundCache.get(url);
-    try {
-        const response = await axios.get(url, {
-            responseType: "arraybuffer",
-            headers: { "User-Agent": "Mozilla/5.0" }
-        });
-        const img = await loadImage(Buffer.from(response.data));
-        backgroundCache.set(url, img);
-        return img;
-    } catch (error) {
-        return null;
-    }
-}
-
 function drawFlower(ctx, x, y, size, color, petalCount, rotation) {
     const petals = petalCount || 8;
     const radius = size / 2;
@@ -308,6 +280,503 @@ function drawCrown(ctx, x, y, size, color) {
     ctx.restore();
 }
 
+function drawSkyBase(ctx, width, height, stops) {
+    const gradient = ctx.createLinearGradient(0, 0, 0, height);
+    stops.forEach(([offset, color]) => gradient.addColorStop(offset, color));
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+}
+
+function drawStarsField(ctx, width, height, count, maxY, twinkleColor) {
+    for (let i = 0; i < count; i++) {
+        const x = Math.random() * width;
+        const y = Math.random() * (maxY || height * 0.65);
+        const r = Math.random() * 1.6 + 0.3;
+        ctx.globalAlpha = 0.25 + Math.random() * 0.6;
+        ctx.fillStyle = twinkleColor || '#ffffff';
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+}
+
+function drawFogBand(ctx, width, y, bandHeight, rgb, alpha) {
+    const gradient = ctx.createLinearGradient(0, y, 0, y + bandHeight);
+    gradient.addColorStop(0, `rgba(${rgb},0)`);
+    gradient.addColorStop(0.5, `rgba(${rgb},${alpha})`);
+    gradient.addColorStop(1, `rgba(${rgb},0)`);
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, y, width, bandHeight);
+}
+
+function drawMoon(ctx, x, y, radius) {
+    ctx.save();
+    ctx.shadowColor = 'rgba(220, 220, 255, 0.8)';
+    ctx.shadowBlur = 80;
+    const gradient = ctx.createRadialGradient(x - radius * 0.3, y - radius * 0.3, radius * 0.1, x, y, radius);
+    gradient.addColorStop(0, '#fdfdf7');
+    gradient.addColorStop(0.7, '#e8e6d8');
+    gradient.addColorStop(1, '#c9c6b8');
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    ctx.globalAlpha = 0.15;
+    ctx.fillStyle = '#9a9788';
+    for (let i = 0; i < 5; i++) {
+        const cx = x + (Math.random() - 0.5) * radius;
+        const cy = y + (Math.random() - 0.5) * radius;
+        const cr = radius * (0.06 + Math.random() * 0.1);
+        ctx.beginPath();
+        ctx.arc(cx, cy, cr, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    ctx.restore();
+}
+
+function drawTree(ctx, x, baseY, scale, color) {
+    ctx.save();
+    ctx.translate(x, baseY);
+    ctx.scale(scale, scale);
+    ctx.fillStyle = color;
+
+    ctx.fillRect(-8, -20, 16, 20);
+
+    ctx.beginPath();
+    ctx.moveTo(0, -260);
+    const blobs = 9;
+    for (let i = 0; i <= blobs; i++) {
+        const t = i / blobs;
+        const wobbleX = (Math.random() - 0.5) * 40;
+        const wobbleY = (Math.random() - 0.5) * 15;
+        const px = -120 + t * 240 + wobbleX;
+        const py = -20 - Math.sin(t * Math.PI) * 220 + wobbleY;
+        ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+}
+
+function drawToriiGate(ctx, x, y, scale, color) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(scale, scale);
+    ctx.fillStyle = color;
+
+    ctx.fillRect(-90, -260, 26, 280);
+    ctx.fillRect(64, -260, 26, 280);
+
+    ctx.save();
+    ctx.translate(0, -290);
+    ctx.rotate(-0.02);
+    ctx.fillRect(-140, -18, 280, 22);
+    ctx.restore();
+    ctx.fillRect(-125, -270, 250, 16);
+
+    ctx.fillRect(-55, -230, 110, 18);
+    ctx.restore();
+}
+
+function drawStairs(ctx, x, y, steps, stepW, stepH, color) {
+    ctx.save();
+    ctx.fillStyle = color;
+    for (let i = 0; i < steps; i++) {
+        const w = stepW - i * (stepW / steps) * 0.55;
+        const px = x - w / 2;
+        const py = y - i * stepH;
+        ctx.globalAlpha = 0.5 + (i / steps) * 0.4;
+        ctx.fillRect(px, py, w, stepH + 2);
+    }
+    ctx.globalAlpha = 1;
+    ctx.restore();
+}
+
+function drawLantern(ctx, x, y, scale, glowColor) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(scale, scale);
+
+    ctx.fillStyle = 'rgba(20, 15, 10, 0.9)';
+    ctx.fillRect(-4, 0, 8, 70);
+
+    ctx.shadowColor = glowColor;
+    ctx.shadowBlur = 35;
+    ctx.fillStyle = glowColor;
+    ctx.beginPath();
+    ctx.roundRect(-16, -55, 32, 45, 6);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    ctx.fillStyle = 'rgba(20, 15, 10, 0.9)';
+    ctx.fillRect(-22, -62, 44, 8);
+    ctx.beginPath();
+    ctx.moveTo(-14, -70);
+    ctx.lineTo(14, -70);
+    ctx.lineTo(0, -85);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+}
+
+function drawHangingLantern(ctx, x, topY, scale, glowColor) {
+    ctx.save();
+    ctx.translate(x, topY);
+    ctx.scale(scale, scale);
+    ctx.strokeStyle = 'rgba(20,15,10,0.6)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, 25);
+    ctx.stroke();
+    ctx.shadowColor = glowColor;
+    ctx.shadowBlur = 30;
+    ctx.fillStyle = glowColor;
+    ctx.beginPath();
+    ctx.ellipse(0, 55, 22, 30, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = 'rgba(20,15,10,0.85)';
+    ctx.fillRect(-6, 22, 12, 8);
+    ctx.fillRect(-6, 82, 12, 8);
+    ctx.restore();
+}
+
+function drawMapleLeaf(ctx, x, y, size, color, rotation) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rotation || 0);
+    ctx.fillStyle = color;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    const points = 5;
+    for (let i = 0; i < points; i++) {
+        const angle = (i / points) * Math.PI * 2 - Math.PI / 2;
+        const outerX = Math.cos(angle) * size;
+        const outerY = Math.sin(angle) * size;
+        const innerAngle = angle + Math.PI / points;
+        const innerX = Math.cos(innerAngle) * size * 0.45;
+        const innerY = Math.sin(innerAngle) * size * 0.45;
+        if (i === 0) ctx.moveTo(outerX, outerY);
+        else ctx.lineTo(outerX, outerY);
+        ctx.lineTo(innerX, innerY);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.restore();
+}
+
+function drawPetal(ctx, x, y, size, color, rotation) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rotation || 0);
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, size, size * 0.55, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+}
+
+function drawCherryBlossomTree(ctx, x, baseY, scale, blossomColor) {
+    ctx.save();
+    ctx.translate(x, baseY);
+    ctx.scale(scale, scale);
+    ctx.strokeStyle = 'rgba(15,10,10,0.85)';
+    ctx.lineWidth = 10;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(-10, -140);
+    ctx.moveTo(-10, -140);
+    ctx.lineTo(-70, -220);
+    ctx.moveTo(-10, -140);
+    ctx.lineTo(40, -210);
+    ctx.moveTo(-10, -140);
+    ctx.lineTo(-30, -230);
+    ctx.stroke();
+
+    ctx.fillStyle = blossomColor;
+    ctx.shadowColor = blossomColor;
+    ctx.shadowBlur = 15;
+    const clusters = [[-70, -230], [40, -220], [-30, -250], [10, -180], [-90, -190], [70, -180]];
+    clusters.forEach(([cx, cy]) => {
+        for (let i = 0; i < 6; i++) {
+            const ox = cx + (Math.random() - 0.5) * 60;
+            const oy = cy + (Math.random() - 0.5) * 40;
+            const r = 18 + Math.random() * 20;
+            ctx.beginPath();
+            ctx.arc(ox, oy, r, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    });
+    ctx.shadowBlur = 0;
+    ctx.restore();
+}
+
+function drawPagodaSilhouette(ctx, x, baseY, scale, color) {
+    ctx.save();
+    ctx.translate(x, baseY);
+    ctx.scale(scale, scale);
+    ctx.fillStyle = color;
+    const tiers = 4;
+    for (let i = 0; i < tiers; i++) {
+        const w = 140 - i * 26;
+        const y = -i * 55;
+        ctx.beginPath();
+        ctx.moveTo(-w / 2 - 20, y);
+        ctx.lineTo(0, y - 40);
+        ctx.lineTo(w / 2 + 20, y);
+        ctx.lineTo(w / 2 - 10, y);
+        ctx.lineTo(0, y - 20);
+        ctx.lineTo(-w / 2 + 10, y);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillRect(-w / 2 + 15, y, w - 30, 45);
+    }
+    ctx.fillRect(-6, -tiers * 55 - 60, 12, 60);
+    ctx.beginPath();
+    ctx.arc(0, -tiers * 55 - 65, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+}
+
+function drawAuroraRibbon(ctx, width, y, amplitude, color) {
+    ctx.save();
+    ctx.globalAlpha = 0.16;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    for (let x = 0; x <= width; x += 20) {
+        ctx.lineTo(x, y + Math.sin(x * 0.006) * amplitude);
+    }
+    for (let x = width; x >= 0; x -= 20) {
+        ctx.lineTo(x, y + 60 + Math.sin(x * 0.006 + 1) * amplitude);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.restore();
+}
+
+function drawMountainLayer(ctx, width, baseY, amplitude, segments, color, canvasHeight) {
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(0, baseY);
+    for (let i = 0; i <= segments; i++) {
+        const x = (width / segments) * i;
+        const y = baseY - Math.abs(Math.sin(i * 1.7 + amplitude * 0.01)) * amplitude - Math.random() * amplitude * 0.3;
+        ctx.lineTo(x, y);
+    }
+    ctx.lineTo(width, canvasHeight);
+    ctx.lineTo(0, canvasHeight);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+}
+
+function drawPalaceSilhouette(ctx, width, baseY, color) {
+    ctx.save();
+    ctx.fillStyle = color;
+    const centerX = width / 2;
+    ctx.beginPath();
+    ctx.moveTo(centerX - 260, baseY);
+    ctx.quadraticCurveTo(centerX - 260, baseY - 90, centerX - 160, baseY - 110);
+    ctx.quadraticCurveTo(centerX - 60, baseY - 170, centerX, baseY - 190);
+    ctx.quadraticCurveTo(centerX + 60, baseY - 170, centerX + 160, baseY - 110);
+    ctx.quadraticCurveTo(centerX + 260, baseY - 90, centerX + 260, baseY);
+    ctx.closePath();
+    ctx.fill();
+    for (let i = -3; i <= 3; i++) {
+        ctx.fillRect(centerX + i * 70 - 8, baseY, 16, 130);
+    }
+    ctx.restore();
+}
+
+function drawFirework(ctx, x, y, radius, color) {
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 12;
+    ctx.lineWidth = 2;
+    const rays = 12;
+    for (let i = 0; i < rays; i++) {
+        const angle = (i / rays) * Math.PI * 2;
+        ctx.globalAlpha = 0.5 + Math.random() * 0.5;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + Math.cos(angle) * radius, y + Math.sin(angle) * radius);
+        ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
+    ctx.restore();
+}
+
+function drawThemeAutumnShrine(ctx, width, height) {
+    drawSkyBase(ctx, width, height, [
+        [0, '#050310'], [0.25, '#0d0a24'], [0.5, '#170a2e'], [0.75, '#100a1f'], [1, '#03020a']
+    ]);
+    const haze = ctx.createRadialGradient(width * 0.56, height * 0.16, 50, width * 0.56, height * 0.16, 700);
+    haze.addColorStop(0, 'rgba(150, 60, 90, 0.22)');
+    haze.addColorStop(1, 'rgba(150, 60, 90, 0)');
+    ctx.fillStyle = haze;
+    ctx.fillRect(0, 0, width, height);
+
+    drawMoon(ctx, width * 0.56, height * 0.14, 65);
+    drawStarsField(ctx, width, height, 140, height * 0.55);
+
+    const stairBaseX = width * 0.62;
+    const stairBaseY = height - 90;
+    drawStairs(ctx, stairBaseX, stairBaseY, 16, 420, 30, 'rgba(15, 20, 30, 0.55)');
+    drawToriiGate(ctx, width * 0.66, stairBaseY - 40, 1.15, 'rgba(10, 8, 15, 0.75)');
+
+    const lanternColor = 'rgba(255, 170, 90, 0.9)';
+    for (let i = 0; i < 4; i++) {
+        const t = i / 3;
+        const lx = stairBaseX + (width * 0.9 - stairBaseX) * t - 60;
+        const ly = stairBaseY - t * 400 - 60;
+        drawLantern(ctx, lx, ly, 0.7 + t * 0.3, lanternColor);
+    }
+
+    const treeColor = 'rgba(5, 8, 12, 0.9)';
+    [-40, 80, 180, 280, 380].forEach((tx, i) => drawTree(ctx, tx, height + 40, 0.9 - i * 0.08, treeColor));
+    [width + 40, width - 60].forEach((tx, i) => drawTree(ctx, tx, height + 40, 0.85 - i * 0.1, treeColor));
+
+    drawFogBand(ctx, width, height * 0.62, 160, '20,15,30', 0.35);
+
+    const leafColors = ['#c0392b', '#e74c3c', '#a93226', '#922b21'];
+    for (let i = 0; i < 45; i++) {
+        drawMapleLeaf(ctx, Math.random() * width * 0.55, Math.random() * height * 0.55, 8 + Math.random() * 16, leafColors[Math.floor(Math.random() * leafColors.length)], Math.random() * Math.PI * 2);
+    }
+    for (let i = 0; i < 18; i++) {
+        drawMapleLeaf(ctx, Math.random() * width, Math.random() * height, 3 + Math.random() * 6, 'rgba(255,100,130,0.5)', Math.random() * Math.PI * 2);
+    }
+}
+
+function drawThemeSakuraDream(ctx, width, height) {
+    drawSkyBase(ctx, width, height, [
+        [0, '#0a0518'], [0.3, '#1a0c2e'], [0.6, '#2a1338'], [1, '#0a0410']
+    ]);
+    const haze = ctx.createRadialGradient(width * 0.5, height * 0.15, 50, width * 0.5, height * 0.15, 750);
+    haze.addColorStop(0, 'rgba(255, 130, 200, 0.18)');
+    haze.addColorStop(1, 'rgba(255, 130, 200, 0)');
+    ctx.fillStyle = haze;
+    ctx.fillRect(0, 0, width, height);
+
+    drawMoon(ctx, width * 0.5, height * 0.13, 60);
+    drawStarsField(ctx, width, height, 100, height * 0.5);
+
+    drawPagodaSilhouette(ctx, width * 0.78, height - 70, 1.3, 'rgba(15, 8, 20, 0.8)');
+
+    const blossomColor = 'rgba(255, 170, 210, 0.35)';
+    [[width * 0.1, height - 40, 1.3], [width * 0.25, height - 30, 1.0], [width * 0.92, height - 40, 1.2]].forEach(([x, y, s]) => {
+        drawCherryBlossomTree(ctx, x, y, s, blossomColor);
+    });
+
+    for (let i = 0; i < 5; i++) {
+        const t = i / 4;
+        drawHangingLantern(ctx, width * 0.15 + t * width * 0.7, 90 + Math.sin(t * Math.PI) * -20, 0.8, 'rgba(255, 190, 130, 0.9)');
+    }
+
+    drawFogBand(ctx, width, height * 0.65, 150, '40,15,35', 0.3);
+
+    for (let i = 0; i < 60; i++) {
+        drawPetal(ctx, Math.random() * width, Math.random() * height, 5 + Math.random() * 10, 'rgba(255,182,217,0.7)', Math.random() * Math.PI * 2);
+    }
+}
+
+function drawThemeMysticPeaks(ctx, width, height) {
+    drawSkyBase(ctx, width, height, [
+        [0, '#020208'], [0.3, '#050a1c'], [0.6, '#081226'], [1, '#020106']
+    ]);
+    drawStarsField(ctx, width, height, 180, height * 0.6);
+    drawMoon(ctx, width * 0.2, height * 0.12, 50);
+
+    drawAuroraRibbon(ctx, width, height * 0.18, 40, '#4ecdc4');
+    drawAuroraRibbon(ctx, width, height * 0.24, 30, '#a78bfa');
+
+    drawMountainLayer(ctx, width, height * 0.75, 90, 12, 'rgba(20, 30, 45, 0.55)', height);
+    drawMountainLayer(ctx, width, height * 0.85, 130, 10, 'rgba(10, 16, 26, 0.75)', height);
+    drawMountainLayer(ctx, width, height * 0.95, 160, 8, 'rgba(4, 8, 14, 0.95)', height);
+
+    drawToriiGate(ctx, width * 0.5, height * 0.62, 0.75, 'rgba(6, 5, 10, 0.85)');
+
+    const treeColor = 'rgba(3, 6, 10, 0.95)';
+    [width * 0.05, width * 0.15, width * 0.9, width * 0.97].forEach((tx, i) => drawTree(ctx, tx, height, 0.6 + (i % 2) * 0.15, treeColor));
+
+    drawFogBand(ctx, width, height * 0.8, 120, '10,20,30', 0.4);
+
+    for (let i = 0; i < 25; i++) {
+        const x = Math.random() * width;
+        const y = height * 0.4 + Math.random() * height * 0.3;
+        ctx.globalAlpha = 0.15 + Math.random() * 0.3;
+        ctx.fillStyle = '#7ee8fa';
+        ctx.shadowColor = '#7ee8fa';
+        ctx.shadowBlur = 6;
+        ctx.beginPath();
+        ctx.arc(x, y, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    }
+    ctx.globalAlpha = 1;
+}
+
+function drawThemeGoldenPalace(ctx, width, height) {
+    drawSkyBase(ctx, width, height, [
+        [0, '#0c0704'], [0.3, '#1c0f10'], [0.6, '#160a18'], [1, '#050303']
+    ]);
+    const haze = ctx.createRadialGradient(width * 0.5, height * 0.2, 50, width * 0.5, height * 0.2, 800);
+    haze.addColorStop(0, 'rgba(255, 200, 100, 0.18)');
+    haze.addColorStop(1, 'rgba(255, 200, 100, 0)');
+    ctx.fillStyle = haze;
+    ctx.fillRect(0, 0, width, height);
+
+    drawStarsField(ctx, width, height, 100, height * 0.5);
+    drawMoon(ctx, width * 0.85, height * 0.14, 55);
+
+    for (let i = 0; i < 5; i++) {
+        drawFirework(ctx, width * (0.1 + Math.random() * 0.8), height * (0.1 + Math.random() * 0.25), 30 + Math.random() * 30, i % 2 === 0 ? '#ffd700' : '#ff8fd0');
+    }
+
+    drawPalaceSilhouette(ctx, width, height - 60, 'rgba(10, 6, 8, 0.85)');
+
+    for (let i = -3; i <= 3; i++) {
+        const x = width / 2 + i * 70;
+        drawHangingLantern(ctx, x, height - 190, 0.55, 'rgba(255, 200, 110, 0.95)');
+    }
+
+    drawFogBand(ctx, width, height * 0.72, 140, '30,15,10', 0.3);
+
+    for (let i = 0; i < 60; i++) {
+        const x = Math.random() * width;
+        const y = Math.random() * height;
+        ctx.globalAlpha = 0.2 + Math.random() * 0.4;
+        ctx.fillStyle = '#ffd700';
+        ctx.beginPath();
+        ctx.arc(x, y, 1 + Math.random() * 2, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+}
+
+const CARD_THEMES = [
+    { name: 'autumn-shrine', draw: drawThemeAutumnShrine, accent: 'rgba(255,140,90,0.14)' },
+    { name: 'sakura-dream', draw: drawThemeSakuraDream, accent: 'rgba(255,150,210,0.14)' },
+    { name: 'mystic-peaks', draw: drawThemeMysticPeaks, accent: 'rgba(126,232,250,0.14)' },
+    { name: 'golden-palace', draw: drawThemeGoldenPalace, accent: 'rgba(255,215,0,0.14)' }
+];
+
+function pickTheme() {
+    return CARD_THEMES[Math.floor(Math.random() * CARD_THEMES.length)];
+}
+
 async function drawProfileImage(ctx, imageUrl, x, y, size, borderColor, glowColor, shadowSize, innerGlow) {
     const radius = size / 2;
     try {
@@ -392,23 +861,11 @@ async function createWelcomeCard(gcImg, userImg, adderImg, userName, userNumber,
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext('2d');
 
-    const selectedBackground = backgroundImages[Math.floor(Math.random() * backgroundImages.length)];
-    const background = await loadBackgroundImage(selectedBackground);
-    
-    if (background) {
-        ctx.drawImage(background, 0, 0, width, height);
-    } else {
-        const gradient = ctx.createLinearGradient(0, 0, width, height);
-        gradient.addColorStop(0, '#0a0a1a');
-        gradient.addColorStop(0.15, '#1a0a2e');
-        gradient.addColorStop(0.3, '#0d1b2a');
-        gradient.addColorStop(0.5, '#1a0a2e');
-        gradient.addColorStop(0.7, '#0d1b2a');
-        gradient.addColorStop(0.85, '#1a0a2e');
-        gradient.addColorStop(1, '#0a0a1a');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, width, height);
-    }
+    const theme = pickTheme();
+    theme.draw(ctx, width, height);
+
+    ctx.fillStyle = theme.accent;
+    ctx.fillRect(0, 0, width, height);
 
     const overlay = ctx.createRadialGradient(width/2, height/2, 200, width/2, height/2, 1100);
     overlay.addColorStop(0, "rgba(0,0,0,0.02)");
