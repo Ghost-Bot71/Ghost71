@@ -57,8 +57,8 @@ module.exports = {
       ctx.drawImage(background, 0, 0);
 
       const positions = [
-        { x: 360, y: 290, r: 30 },
-        { x: 150, y: 130, r: 30 }
+        { x: 150, y: 130, r: 30 },
+        { x: 360, y: 290, r: 30 }
       ];
 
       const placeAvatar = (img, pos) => {
