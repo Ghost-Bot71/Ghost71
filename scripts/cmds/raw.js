@@ -5,7 +5,7 @@ const axios = require("axios");
 module.exports = {
   config: {
     name: "raw",
-    aliases: ["bin", "pastebin"],
+    aliases: ["bin"],
     version: "1.0",
     author: "xalman",
     countDown: 5,
