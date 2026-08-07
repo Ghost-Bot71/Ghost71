@@ -1,4 +1,4 @@
-Cmd install donkey.js const axios = require('axios');
+const axios = require('axios');
 const { createCanvas, loadImage } = require('canvas');
 const fs = require('fs-extra');
 const path = require('path');
