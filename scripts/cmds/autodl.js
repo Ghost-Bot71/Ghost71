@@ -81,14 +81,14 @@ function getExtension(url, contentType, isAudio) {
 
 module.exports = {
   config: {
-    name: "alldl",
-    version: "16.0",
+    name: "autodl",
+    version: "20.0",
     author: "xalman",
-    countDown: 3,
+    countDown: 1,
     role: 0,
     shortDescription: "Multi-Platform Media Downloader",
     longDescription: "Download video/audio from supported platforms.",
-    category: "MEDIA",
+    category: "ANIME & MEDIA",
     guide: "{pn} <link> (or just send the link)"
   },
 
@@ -138,7 +138,9 @@ module.exports = {
       "soundcloud.com",
       "mediafire.com",
       "snapchat.com",
-      "threads.com"
+      "threads.com",
+      "likee.com",
+      "likee.video"
     ];
 
     if (
