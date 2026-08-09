@@ -136,7 +136,9 @@ module.exports = {
       "capcut.com",
       "spotify.com",
       "soundcloud.com",
-      "mediafire.com"
+      "mediafire.com",
+      "snapchat.com",
+      "threads.com"
     ];
 
     if (
