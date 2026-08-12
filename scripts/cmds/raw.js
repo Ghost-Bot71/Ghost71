@@ -6,63 +6,81 @@ module.exports = {
   config: {
     name: "raw",
     aliases: ["bin"],
-    version: "1.0",
+    version: "2.0",
     author: "xalman",
     countDown: 5,
     role: 2,
-    shortDescription: "Upload file to Pastebin and get raw link",
-    longDescription: "Upload a command file to Pastebin and return the raw link",
+    shortDescription: "Upload file or text to Pastebin and get raw link",
+    longDescription: "Upload a command file or replied text to Pastebin and return the raw link",
     category: "owner",
-    guide: "{pn} <filename>"
+    guide: "{pn} <filename> - upload file\n{pn} (reply to message) - upload replied text"
   },
 
   onStart: async function ({ message, args, api, event }) {
+    const { threadID, messageID, messageReply } = event;
     const fileName = args[0];
-    if (!fileName) {
-      return api.sendMessage("Please provide a file name.\nExample: /raw kill.js", event.threadID, event.messageID);
-    }
+    let contentToUpload = null;
+    let isFile = false;
+    let displayName = "";
 
-    const filePath = path.join(__dirname, `${fileName}`);
-    if (!fs.existsSync(filePath)) {
-      const files = fs.readdirSync(__dirname).filter(f => f.endsWith(".js"));
-      const suggestions = files.filter(f => f.toLowerCase().includes(fileName.toLowerCase()));
-      if (suggestions.length > 0) {
+    if (messageReply && messageReply.body) {
+      contentToUpload = messageReply.body;
+      displayName = fileName || "replied_message.txt";
+    } else if (fileName) {
+      const filePath = path.join(__dirname, fileName);
+      if (!fs.existsSync(filePath)) {
+        const files = fs.readdirSync(__dirname).filter(f => f.endsWith(".js"));
+        const suggestions = files.filter(f => f.toLowerCase().includes(fileName.toLowerCase()));
+        if (suggestions.length > 0) {
+          return api.sendMessage(
+            `File not found: ${fileName}\n\nDid you mean:\n- ${suggestions.join("\n- ")}`,
+            threadID,
+            messageID
+          );
+        }
         return api.sendMessage(
-          `File not found: ${fileName}\n\nDid you mean:\n- ${suggestions.join("\n- ")}`,
-          event.threadID,
-          event.messageID
+          `File not found: ${fileName}\n\nAvailable files:\n- ${files.join("\n- ")}`,
+          threadID,
+          messageID
         );
       }
+      contentToUpload = fs.readFileSync(filePath, "utf8");
+      displayName = fileName;
+      isFile = true;
+    } else {
       return api.sendMessage(
-        `File not found: ${fileName}\n\nAvailable files:\n- ${files.join("\n- ")}`,
-        event.threadID,
-        event.messageID
+        "Please provide a file name or reply to a message.\nExample: /raw kill.js\nExample: /raw (reply to any message)",
+        threadID,
+        messageID
       );
     }
 
-    try {
-      const fileContent = fs.readFileSync(filePath, "utf8");
-      const encodedContent = encodeURIComponent(fileContent);
-      const apiUrl = `https://xalman-apis.vercel.app/api/pastebin?text=${encodedContent}`;
+    if (!contentToUpload) {
+      return api.sendMessage("❌ No content to upload.", threadID, messageID);
+    }
 
+    try {
+      const encodedContent = encodeURIComponent(contentToUpload);
+      const apiUrl = `https://xalman-apis.vercel.app/api/save?content=${encodedContent}`;
       const response = await axios.get(apiUrl, { timeout: 15000 });
 
-      if (response.data && response.data.status && response.data.result) {
-        const rawUrl = response.data.result.raw;
+      if (response.data && response.data.status && response.data.rawUrl) {
+        const rawUrl = response.data.rawUrl;
+        const fileType = isFile ? "📄 File" : "📝 Text";
         return api.sendMessage(
-          `📄 ${fileName}\n🔗 ${rawUrl}`,
-          event.threadID,
-          event.messageID
+          `${fileType}: ${displayName}\n🔗 ${rawUrl}`,
+          threadID,
+          messageID
         );
       } else {
-        throw new Error("Invalid response from Pastebin API");
+        throw new Error("Invalid response from API");
       }
     } catch (error) {
-      console.error("Pastebin upload error:", error.message);
+      console.error("Upload error:", error.message);
       return api.sendMessage(
-        "❌ Failed to upload file to Pastebin. Please try again later.",
-        event.threadID,
-        event.messageID
+        "❌ Failed to upload. Please try again later.",
+        threadID,
+        messageID
       );
     }
   }
