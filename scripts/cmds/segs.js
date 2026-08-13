@@ -5,8 +5,8 @@ const path = require("path");
 module.exports = {
   config: {
     name: "segs",
-    aliases: ["xn", "xnxx"],
-    version: "4.5",
+    aliases: ["xnxx"],
+    version: "5.0",
     author: "xalman",
     countDown: 5,
     role: 2,
@@ -90,25 +90,67 @@ module.exports = {
     try {
       api.unsendMessage(listMessageID);
       
-      api.setMessageReaction("📥", event.messageID, () => {}, true);
-      
-      const vidRes = await axios.get(videoUrl, { 
+                  api.setMessageReaction("📥", event.messageID, () => {}, true);
+
+      const cacheDir = path.join(__dirname, "cache");
+      if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir, { recursive: true });
+
+      const tempFilePath = path.join(cacheDir, `${Date.now()}_video.mp4`);
+      const headRes = await axios.head(videoUrl).catch(() => null);
+      if (headRes && headRes.headers['content-length']) {
+        const fileSizeMB = parseInt(headRes.headers['content-length']) / (1024 * 1024);
+        if (fileSizeMB > 80) { 
+          api.setMessageReaction("❌", event.messageID, () => {}, true);
+          return message.reply("❌ | Video file size is too large to send (>80MB).");
+        }
+      }
+
+      const response = await axios({
+        method: "GET",
+        url: videoUrl,
         responseType: "stream",
+        timeout: 200000, 
         headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
+          'Accept': '*/*'
         }
       });
-      
+
+      const writer = fs.createWriteStream(tempFilePath);
+      response.data.pipe(writer);
+
+      await new Promise((resolve, reject) => {
+        writer.on("finish", resolve);
+        writer.on("error", (err) => {
+          writer.close();
+          reject(err);
+        });
+        response.data.on("error", (err) => {
+          writer.close();
+          reject(err);
+        });
+      });
+
       return api.sendMessage({
         body: `✅ | Title: ${selected.title}`,
-        attachment: vidRes.data
+        attachment: fs.createReadStream(tempFilePath)
       }, event.threadID, (err) => {
-          if (err) return message.reply("❌ | Video file is too large or link expired.");
+
+        if (fs.existsSync(tempFilePath)) fs.unlinkSync(tempFilePath);
+
+        if (err) {
+          api.setMessageReaction("❌", event.messageID, () => {}, true);
+          return message.reply("❌ | Failed to send video attachment.");
+        }
+        
+        api.setMessageReaction("✅", event.messageID, () => {}, true);
       }, event.messageID);
 
     } catch (err) {
+      console.error("Stream Download Error:", err);
       api.setMessageReaction("❌", event.messageID, () => {}, true);
-      return message.reply("❌ | Failed to fetch video file.");
+      return message.reply("❌ | Failed to download or process video stream.");
     }
   }
 };
+        
