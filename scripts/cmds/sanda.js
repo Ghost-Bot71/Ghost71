@@ -6,7 +6,7 @@ const path = require("path");
 module.exports = {
   config: {
     name: "sanda",
-    version: "1.0",
+    version: "2.0",
     author: "xalman",
     countDown: 5,
     role: 0,
@@ -70,7 +70,7 @@ module.exports = {
       api.setMessageReaction("✅", messageID, () => {}, true);
 
       return api.sendMessage({
-        body: `${name}, 🫵🤣`,
+        body: `🚨 BREAKING NEWS 🚨\n\nসাহারা মরুভূমিতে বিরল প্রজাতির সান্ডা পাওয়া গেছে! বিজ্ঞানিরা নিশ্চিত করেছেন এটি আর কেউ নয়, আমাদের ${name} 🦎☀️`,
         attachment: fs.createReadStream(pathImg)
       }, threadID, () => {
         if (fs.existsSync(pathImg)) fs.unlinkSync(pathImg);
