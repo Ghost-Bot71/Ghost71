@@ -1,69 +1,55 @@
-const { createCanvas, loadImage } = require('canvas');
-const fs = require("fs-extra");
+const axios = require("axios");
+const fs = require("fs");
 const path = require("path");
 
 module.exports = {
   config: {
     name: "nokia",
-    version: "3.2",
-    author: "xalman",
-    countDown: 5,
+    version: "1.0",
+    author: "Rakib Islam",
+    countDown: 10,
     role: 0,
-    category: "FUN & SOCIAL",
-    guide: { en: "{pn} @mention / reply / UID" }
+    shortDescription: {
+      en: "Apply Nokia screen effect to profile photo"
+    },
+    description: {
+      en: "Creates a Nokia-style image using your or mentioned user's avatar"
+    },
+    category: "fun",
+    guide: {
+      en: "{p}nokia [@mention or reply]\n\nDefault: Your profile picture"
+    }
   },
 
-  onStart: async function ({ api, event, args }) {
-    const { threadID, messageID, senderID, type, messageReply, mentions } = event;
-    const cacheDir = path.join(__dirname, 'cache');
-    if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir);
+  onStart: async function ({ api, event, usersData, message }) {
+    const { senderID, mentions, type, messageReply } = event;
 
-    api.setMessageReaction("⏳", messageID, () => {}, true);
-
-    const bgUrl = "https://iili.io/qJehE8u.png"; 
-    let targetID;
-
-    if (type === "message_reply") {
-      targetID = messageReply.senderID;
-    } else if (Object.keys(mentions).length > 0) {
-      targetID = Object.keys(mentions)[0];
-    } else if (args.length > 0) {
-      targetID = args[0];
+    let uid;
+    if (Object.keys(mentions).length > 0) {
+      uid = Object.keys(mentions)[0];
+    } else if (type === "message_reply") {
+      uid = messageReply.senderID;
     } else {
-      targetID = senderID;
+      uid = senderID;
     }
 
+    const avatarURL = `https://graph.facebook.com/${uid}/picture?height=512&width=512&access_token=350685531728|62f8ce9f74b12f84c123cc23437a4a32`;
+
     try {
-      const [background, avatar] = await Promise.all([
-        loadImage(bgUrl),
-        loadImage(`https://graph.facebook.com/${targetID}/picture?width=1000&height=1000&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`)
-      ]);
+      const res = await axios.get(`https://api.popcat.xyz/v2/nokia?image=${encodeURIComponent(avatarURL)}`, {
+        responseType: "arraybuffer"
+      });
 
-      const canvas = createCanvas(background.width, background.height);
-      const ctx = canvas.getContext('2d');
-      
-      ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+      const imagePath = path.join(__dirname, "cache", `nokia_${uid}.jpg`);
+      fs.writeFileSync(imagePath, res.data);
 
-      const moveRight = 80;   
-      const moveDown = 280;    
-      const widthSize = 320;   
-      const heightSize = 245;  
-
-      ctx.drawImage(avatar, moveRight, moveDown, widthSize, heightSize);
-
-      const cachePath = path.join(cacheDir, `nokia_${targetID}.png`);
-      fs.writeFileSync(cachePath, canvas.toBuffer());
-
-      return api.sendMessage({
-        attachment: fs.createReadStream(cachePath)
-      }, threadID, () => {
-        api.setMessageReaction("✅", messageID, () => {}, true);
-        fs.unlinkSync(cachePath);
-      }, messageID);
-
-    } catch (e) {
-      api.setMessageReaction("❌", messageID, () => {}, true);
-      return api.sendMessage("", threadID, messageID);
+      message.reply({
+        body: `📱 | Here's your Nokia screen effect!`,
+        attachment: fs.createReadStream(imagePath)
+      }, () => fs.unlinkSync(imagePath));
+    } catch (err) {
+      console.error(err);
+      message.reply("❌ | Failed to generate Nokia image.");
     }
   }
 };
