@@ -1,7 +1,7 @@
 {
   "facebookAccount": {
-    "email": "xadikaxara@gmail.com",
-    "password": "xadikax210",
+    "email": "",
+    "password": "",
     "2FASecret": "",
     "i_user": "",
     "proxy": null,
@@ -26,7 +26,7 @@
   },
   "adminBot": [
     "61575436812912",
-    "61582040799720"
+    "61592104482524"
   ],
   "developer": [
     "61575436812912"
